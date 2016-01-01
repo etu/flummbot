@@ -7,3 +7,8 @@ go get github.com/fluffle/goirc/client
 go get github.com/mattn/go-sqlite3
 go get gopkg.in/gcfg.v1
 #+END_SRC
+
+** Configure bot
+Copy the sample config =flummbot.sample.gcfg= to =flummbot.gcfg= and
+change the values of =channel=, =nick=, =server= and possibly
+=nickservIdentify= if you want it to register to services.
