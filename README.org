@@ -1,2 +1,9 @@
 * flummbot simple irc-bot
 Simple IRC-bot I wrote in golang for my irc-channel.
+
+** Install dependencies
+#+BEGIN_SRC shell
+go get github.com/fluffle/goirc/client
+go get github.com/mattn/go-sqlite3
+go get gopkg.in/gcfg.v1
+#+END_SRC
