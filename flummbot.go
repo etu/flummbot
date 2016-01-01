@@ -5,18 +5,18 @@ import (
 	"fmt"
 	irc "github.com/fluffle/goirc/client"
 	_ "github.com/mattn/go-sqlite3"
+	"gopkg.in/gcfg.v1"
 	"os"
 	"strings"
 	"time"
-	"gopkg.in/gcfg.v1"
 )
 
 // Structure of config
 type Config struct {
 	Connection struct {
-		Channel string
-		Nick string
-		Server string
+		Channel          string
+		Nick             string
+		Server           string
 		NickservIdentify string
 	}
 }
@@ -154,7 +154,7 @@ func connectCallback(channel string, nickserv string) func(*irc.Conn, *irc.Line)
 	return func(conn *irc.Conn, line *irc.Line) {
 		// Identify to services
 		if len(nickserv) > 0 {
-			conn.Privmsg("NickServ", "IDENTIFY " + nickserv)
+			conn.Privmsg("NickServ", "IDENTIFY "+nickserv)
 		}
 
 		// Sleep while auth happens
