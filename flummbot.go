@@ -153,7 +153,9 @@ func joinCallback(db *sql.DB) func(*irc.Conn, *irc.Line) {
 func connectCallback(channel string, nickserv string) func(*irc.Conn, *irc.Line) {
 	return func(conn *irc.Conn, line *irc.Line) {
 		// Identify to services
-		conn.Privmsg("NickServ", "IDENTIFY " + nickserv)
+		if len(nickserv) > 0 {
+			conn.Privmsg("NickServ", "IDENTIFY " + nickserv)
+		}
 
 		// Sleep while auth happens
 		time.Sleep(time.Second)
