@@ -1,0 +1,15 @@
+[Unit]
+Description=Start flummbot
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=bots
+Group=bots
+ExecStart=/var/lib/bots/flummbot
+WorkingDirectory=/var/lib/bots/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

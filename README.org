@@ -18,3 +18,6 @@ go get gopkg.in/gcfg.v1
 Copy the sample config =flummbot.sample.gcfg= to =flummbot.gcfg= and
 change the values of =channel=, =nick=, =server= and possibly
 =nickservIdentify= if you want it to register to services.
+
+** Starting bot
+I've included a systemd-service file that I use to start my bot.
