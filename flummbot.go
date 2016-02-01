@@ -6,7 +6,6 @@ import (
 	irc "github.com/fluffle/goirc/client"
 	"gopkg.in/gcfg.v1"
 	"os"
-	"time"
 )
 
 func main() {
@@ -49,14 +48,6 @@ func main() {
 	c = quotes.RegisterCallbacks(c)
 	c = helpers.RegisterCallbacks(c, quit)
 
-	// Add handlers to do things
-	c.HandleFunc(irc.CONNECTED,
-		connectCallback(
-			config.Connection.Channel,
-			config.Connection.NickservIdentify,
-		),
-	)
-
 	// Connect
 	if err := c.Connect(); err != nil {
 		fmt.Printf("Connection error: %s\n", err.Error())
@@ -66,25 +57,4 @@ func main() {
 
 	// Wait for disconnect
 	<-quit
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Callback with function to execute after connect. //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func connectCallback(channel string, nickserv string) func(*irc.Conn, *irc.Line) {
-	return func(conn *irc.Conn, line *irc.Line) {
-		// Identify to services
-		if len(nickserv) > 0 {
-			conn.Privmsg("NickServ", "IDENTIFY "+nickserv)
-		}
-
-		// Sleep while auth happens
-		time.Sleep(time.Second)
-
-		// Then join channel
-		conn.Join(channel)
-
-		// Greet everyone
-		conn.Privmsg(channel, "Hejj")
-	}
 }
