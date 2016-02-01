@@ -25,8 +25,6 @@ func (t *Tells) DbSetup() {
 }
 
 func (t *Tells) RegisterCallbacks(c *client.Conn) *client.Conn {
-	// fmt.Println(client.CONNECTED)
-
 	c.HandleFunc(
 		client.JOIN,
 		func(conn *client.Conn, line *client.Line) {
