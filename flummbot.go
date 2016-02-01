@@ -1,14 +1,11 @@
 package main
 
 import (
-	"database/sql"
 	"flummbot"
 	"fmt"
 	irc "github.com/fluffle/goirc/client"
-	_ "github.com/mattn/go-sqlite3"
 	"gopkg.in/gcfg.v1"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -50,6 +47,7 @@ func main() {
 	// Register callbacks
 	c = tells.RegisterCallbacks(c)
 	c = quotes.RegisterCallbacks(c)
+	c = helpers.RegisterCallbacks(c, quit)
 
 	// Add handlers to do things
 	c.HandleFunc(irc.CONNECTED,
@@ -58,7 +56,6 @@ func main() {
 			config.Connection.NickservIdentify,
 		),
 	)
-	c.HandleFunc(irc.DISCONNECTED, disconnectCallback(quit))
 
 	// Connect
 	if err := c.Connect(); err != nil {
@@ -89,14 +86,5 @@ func connectCallback(channel string, nickserv string) func(*irc.Conn, *irc.Line)
 
 		// Greet everyone
 		conn.Privmsg(channel, "Hejj")
-	}
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Callback with function on disconnect event. This will end the program. //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func disconnectCallback(quit chan bool) func(*irc.Conn, *irc.Line) {
-	return func(conn *irc.Conn, line *irc.Line) {
-		quit <- true
 	}
 }
