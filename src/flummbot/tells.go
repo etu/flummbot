@@ -50,7 +50,12 @@ func (t *Tells) register(conn *client.Conn, line *client.Line) {
 
 	if cmd == t.Config.Tells.Command {
 		target := strings.Split(line.Args[1], " ")[1]
-		msg := strings.Replace(line.Args[1], "!tell "+target+" ", "", 1)
+		msg := strings.Replace(
+			line.Args[1],
+			t.Config.Tells.Command+" "+target+" ",
+			"",
+			1,
+		)
 
 		// Prepare query
 		stmt, _ := t.Db.Prepare(
@@ -70,10 +75,6 @@ func (t *Tells) register(conn *client.Conn, line *client.Line) {
 	}
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Wrapper to deliver !tell messages to the recipient. This will be used in //
-// several locations.                                                       //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 func (t *Tells) deliver(conn *client.Conn, line *client.Line) {
 	// Check for messages to this person who joined
 	rows, _ := t.Db.Query(
