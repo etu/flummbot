@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flummbot"
 	"fmt"
 	irc "github.com/fluffle/goirc/client"
 	_ "github.com/mattn/go-sqlite3"
@@ -11,19 +12,9 @@ import (
 	"time"
 )
 
-// Structure of config
-type Config struct {
-	Connection struct {
-		Channel          string
-		Nick             string
-		Server           string
-		NickservIdentify string
-	}
-}
-
 func main() {
 	var quit chan bool = make(chan bool)
-	var config Config
+	var config flummbot.Config
 
 	// Load up config
 	if err := gcfg.ReadFileInto(&config, "flummbot.gcfg"); err != nil {
