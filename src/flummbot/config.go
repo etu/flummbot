@@ -8,6 +8,10 @@ type Config struct {
 		NickservIdentify string
 	}
 
+	Database struct {
+		File string
+	}
+
 	Tells struct {
 		Command string
 	}

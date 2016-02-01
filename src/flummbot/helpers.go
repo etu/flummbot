@@ -12,7 +12,7 @@ type Helpers struct {
 }
 
 func (h *Helpers) SetupDatabase() *sql.DB {
-	db, err := sql.Open("sqlite3", "./flummbot.db")
+	db, err := sql.Open("sqlite3", h.Config.Database.File)
 
 	if err != nil {
 		fmt.Println("Failed to open database:", err)
