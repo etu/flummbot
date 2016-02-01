@@ -15,6 +15,7 @@ import (
 func main() {
 	var quit chan bool = make(chan bool)
 	var config flummbot.Config
+	var tells flummbot.Tells
 
 	// Load up config
 	if err := gcfg.ReadFileInto(&config, "flummbot.gcfg"); err != nil {
@@ -25,6 +26,10 @@ func main() {
 	// Load up database
 	db := setupDatabase()
 	defer db.Close()
+
+	// Load tells module
+	tells = flummbot.Tells{config}
+	tells.DbSetup(db)
 
 	// Init irc-config
 	cfg := irc.NewConfig(config.Connection.Nick)
@@ -179,16 +184,6 @@ func setupDatabase() *sql.DB {
 
 		os.Exit(1)
 	}
-
-	// Set up table for tells if it's missing
-	db.Exec(`CREATE TABLE IF NOT EXISTS tells (
-		"id"      integer not null primary key,
-		"from"    text,
-		"to"      text,
-		"channel" text,
-		"body"    text,
-		"date"    text
-	);`)
 
 	// Set up table for quotes if it's missing
 	db.Exec(`CREATE TABLE IF NOT EXISTS quotes (

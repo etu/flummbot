@@ -7,4 +7,8 @@ type Config struct {
 		Server           string
 		NickservIdentify string
 	}
+
+	Tells struct {
+		Command string
+	}
 }
