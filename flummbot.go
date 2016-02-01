@@ -24,8 +24,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Load up helpers
+	helpers := flummbot.Helpers{config}
+
 	// Load up database
-	db := setupDatabase()
+	db := helpers.SetupDatabase()
 	defer db.Close()
 
 	// Load tells module
@@ -34,7 +37,7 @@ func main() {
 
 	// Load quotes module
 	quotes = flummbot.Quotes{config}
-	tells.DbSetup(db)
+	quotes.DbSetup(db)
 
 	// Init irc-config
 	cfg := irc.NewConfig(config.Connection.Nick)
@@ -176,21 +179,6 @@ func disconnectCallback(quit chan bool) func(*irc.Conn, *irc.Line) {
 	return func(conn *irc.Conn, line *irc.Line) {
 		quit <- true
 	}
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Connect to local database and set up tables //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func setupDatabase() *sql.DB {
-	db, err := sql.Open("sqlite3", "./flummbot.db")
-
-	if err != nil {
-		fmt.Println("Failed to open database:", err)
-
-		os.Exit(1)
-	}
-
-	return db
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
