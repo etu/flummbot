@@ -79,22 +79,6 @@ func privmsgCallback(db *sql.DB) func(*irc.Conn, *irc.Line) {
 		cmd := strings.Split(line.Args[1], " ")[0]
 
 		switch {
-		case cmd == "!tell":
-			target := strings.Split(line.Args[1], " ")[1]
-			msg := strings.Replace(line.Args[1], "!tell "+target+" ", "", 1)
-
-			// Prepare query
-			stmt, _ := db.Prepare(`
-				INSERT INTO tells("from", "to", "body", "date", "channel") VALUES(?, ?, ?, ?, ?)
-			`)
-			defer stmt.Close()
-
-			// Exec query: nick, target, msg, time,      channel
-			stmt.Exec(line.Nick, target, msg, line.Time, line.Args[0])
-
-			// Respond in channel
-			conn.Privmsg(line.Args[0], "Alright, I'm going to tell "+target+": "+msg)
-
 		case cmd == "!quote":
 			msg := strings.Replace(line.Args[1], "!quote", "", 1)
 			msg = strings.Trim(msg, " ")

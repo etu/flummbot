@@ -6,3 +6,6 @@ nickservIdentify = ""
 
 [database]
 file = "flummbot.db"
+
+[tells]
+command = "!tell"

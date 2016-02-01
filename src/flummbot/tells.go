@@ -38,10 +38,36 @@ func (t *Tells) RegisterCallbacks(c *client.Conn) *client.Conn {
 		client.PRIVMSG,
 		func(conn *client.Conn, line *client.Line) {
 			go t.deliver(conn, line)
+			go t.register(conn, line)
 		},
 	)
 
 	return c
+}
+
+func (t *Tells) register(conn *client.Conn, line *client.Line) {
+	cmd := strings.Split(line.Args[1], " ")[0]
+
+	if cmd == t.Config.Tells.Command {
+		target := strings.Split(line.Args[1], " ")[1]
+		msg := strings.Replace(line.Args[1], "!tell "+target+" ", "", 1)
+
+		// Prepare query
+		stmt, _ := t.Db.Prepare(
+			`INSERT INTO tells("from", "to", "body", "date", "channel")
+				VALUES(?, ?, ?, ?, ?)`,
+		)
+		defer stmt.Close()
+
+		// Exec query: nick, target, msg, time,      channel
+		stmt.Exec(line.Nick, target, msg, line.Time, line.Args[0])
+
+		// Respond in channel
+		conn.Privmsg(
+			line.Args[0],
+			"Alright, I'm going to tell "+target+": "+msg,
+		)
+	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
