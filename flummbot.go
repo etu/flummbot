@@ -24,19 +24,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Load up helpers
+	// Load up helpers/modules
 	helpers := flummbot.Helpers{config}
+	quotes = flummbot.Quotes{config}
+	tells = flummbot.Tells{config}
 
 	// Load up database
 	db := helpers.SetupDatabase()
 	defer db.Close()
 
-	// Load tells module
-	tells = flummbot.Tells{config}
+	// Init databases
 	tells.DbSetup(db)
-
-	// Load quotes module
-	quotes = flummbot.Quotes{config}
 	quotes.DbSetup(db)
 
 	// Init irc-config
