@@ -30,14 +30,14 @@ func (t *Tells) RegisterCallbacks(c *client.Conn) *client.Conn {
 	c.HandleFunc(
 		client.JOIN,
 		func(conn *client.Conn, line *client.Line) {
-			go t.deliverTells(conn, line)
+			go t.deliver(conn, line)
 		},
 	)
 
 	c.HandleFunc(
 		client.PRIVMSG,
 		func(conn *client.Conn, line *client.Line) {
-			go t.deliverTells(conn, line)
+			go t.deliver(conn, line)
 		},
 	)
 
@@ -48,7 +48,7 @@ func (t *Tells) RegisterCallbacks(c *client.Conn) *client.Conn {
 // Wrapper to deliver !tell messages to the recipient. This will be used in //
 // several locations.                                                       //
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func (t *Tells) deliverTells(conn *client.Conn, line *client.Line) {
+func (t *Tells) deliver(conn *client.Conn, line *client.Line) {
 	// Check for messages to this person who joined
 	rows, _ := t.Db.Query(
 		"SELECT `id`, `from`, `body`, `date` "+
