@@ -6,10 +6,11 @@ import (
 
 type Quotes struct {
 	Config Config
+	Db     *sql.DB
 }
 
-func (q *Quotes) DbSetup(db *sql.DB) {
-	db.Exec(`
+func (q *Quotes) DbSetup() {
+	q.Db.Exec(`
 		CREATE TABLE IF NOT EXISTS quotes (
 			"id"      integer NOT NULL PRIMARY KEY,
 			"nick"    text,
