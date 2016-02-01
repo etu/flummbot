@@ -2,6 +2,7 @@ package flummbot
 
 import (
 	"database/sql"
+	"github.com/fluffle/goirc/client"
 )
 
 type Quotes struct {
@@ -19,4 +20,8 @@ func (q *Quotes) DbSetup() {
 			"date"    text
 		);
 	`)
+}
+
+func (t *Quotes) RegisterCallbacks(c *client.Conn) *client.Conn {
+	return c
 }

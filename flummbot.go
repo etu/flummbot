@@ -49,6 +49,7 @@ func main() {
 
 	// Register callbacks
 	c = tells.RegisterCallbacks(c)
+	c = quotes.RegisterCallbacks(c)
 
 	// Add handlers to do things
 	c.HandleFunc(irc.CONNECTED,
