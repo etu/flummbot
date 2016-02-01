@@ -11,4 +11,8 @@ type Config struct {
 	Tells struct {
 		Command string
 	}
+
+	Quotes struct {
+		Command string
+	}
 }

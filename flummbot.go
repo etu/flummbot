@@ -16,6 +16,7 @@ func main() {
 	var quit chan bool = make(chan bool)
 	var config flummbot.Config
 	var tells flummbot.Tells
+	var quotes flummbot.Quotes
 
 	// Load up config
 	if err := gcfg.ReadFileInto(&config, "flummbot.gcfg"); err != nil {
@@ -29,6 +30,10 @@ func main() {
 
 	// Load tells module
 	tells = flummbot.Tells{config}
+	tells.DbSetup(db)
+
+	// Load quotes module
+	quotes = flummbot.Quotes{config}
 	tells.DbSetup(db)
 
 	// Init irc-config
@@ -184,14 +189,6 @@ func setupDatabase() *sql.DB {
 
 		os.Exit(1)
 	}
-
-	// Set up table for quotes if it's missing
-	db.Exec(`CREATE TABLE IF NOT EXISTS quotes (
-		"id"	integer not null primary key,
-		"nick"	text,
-		"quote"	text,
-		"date"	text
-	);`)
 
 	return db
 }
