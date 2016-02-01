@@ -59,7 +59,6 @@ func main() {
 		),
 	)
 	c.HandleFunc(irc.DISCONNECTED, disconnectCallback(quit))
-	c.HandleFunc(irc.PRIVMSG, privmsgCallback(db))
 
 	// Connect
 	if err := c.Connect(); err != nil {
@@ -70,59 +69,6 @@ func main() {
 
 	// Wait for disconnect
 	<-quit
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Callback to handle Privmsgs //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func privmsgCallback(db *sql.DB) func(*irc.Conn, *irc.Line) {
-	return func(conn *irc.Conn, line *irc.Line) {
-		cmd := strings.Split(line.Args[1], " ")[0]
-
-		switch {
-		case cmd == "!quote":
-			msg := strings.Replace(line.Args[1], "!quote", "", 1)
-			msg = strings.Trim(msg, " ")
-
-			if len(msg) == 0 { // No message given: Fetch random quote
-				// Prepare query
-				stmt, _ := db.Query("SELECT nick, quote, date FROM quotes ORDER BY RANDOM() LIMIT 1")
-				defer stmt.Close()
-
-				stmt.Next()
-
-				var qNick string
-				var qQuote string
-				var qDate string
-
-				stmt.Scan(&qNick, &qQuote, &qDate)
-
-				// Remove the milliseconds from date
-				qDate = strings.Split(qDate, ".")[0]
-
-				// Return quote
-				conn.Privmsg(line.Args[0], "Quote added by "+qNick+" @ "+qDate+": "+qQuote)
-
-			} else { // Add quote to database
-				// Prepare query
-				stmt, _ := db.Prepare(`
-					INSERT INTO quotes("nick", "quote", "date") VALUES(?, ?, ?)
-				`)
-				defer stmt.Close()
-
-				// Exec query: nick, quote, date
-				stmt.Exec(line.Nick, msg, line.Time)
-
-				// Respond in channel
-				conn.Privmsg(line.Args[0], "Quote added, use !quote without params to get a random quote")
-			}
-		}
-
-		// fmt.Println("from", line.Nick)
-		// fmt.Println("chan", line.Args[0])
-		// fmt.Println("msg",  line.Args[1])
-		// fmt.Println("time", line.Time)
-	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//

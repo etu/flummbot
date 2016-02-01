@@ -9,3 +9,6 @@ file = "flummbot.db"
 
 [tells]
 command = "!tell"
+
+[quotes]
+command = "!quote"
