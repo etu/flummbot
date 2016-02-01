@@ -47,6 +47,9 @@ func main() {
 	// Init irc-client
 	c := irc.Client(cfg)
 
+	// Register callbacks
+	c = tells.RegisterCallbacks(c)
+
 	// Add handlers to do things
 	c.HandleFunc(irc.CONNECTED,
 		connectCallback(
@@ -56,7 +59,6 @@ func main() {
 	)
 	c.HandleFunc(irc.DISCONNECTED, disconnectCallback(quit))
 	c.HandleFunc(irc.PRIVMSG, privmsgCallback(db))
-	c.HandleFunc(irc.JOIN, joinCallback(db))
 
 	// Connect
 	if err := c.Connect(); err != nil {
@@ -75,9 +77,6 @@ func main() {
 func privmsgCallback(db *sql.DB) func(*irc.Conn, *irc.Line) {
 	return func(conn *irc.Conn, line *irc.Line) {
 		cmd := strings.Split(line.Args[1], " ")[0]
-
-		// Launch wrapper to deliver tells
-		go deliverTells(db, conn, line)
 
 		switch {
 		case cmd == "!tell":
@@ -141,16 +140,6 @@ func privmsgCallback(db *sql.DB) func(*irc.Conn, *irc.Line) {
 	}
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Callback that launches the function to deliver tell messages to users. //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func joinCallback(db *sql.DB) func(*irc.Conn, *irc.Line) {
-	return func(conn *irc.Conn, line *irc.Line) {
-		// Launch wrapper to deliver tells
-		go deliverTells(db, conn, line)
-	}
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 // Callback with function to execute after connect. //
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -178,50 +167,5 @@ func connectCallback(channel string, nickserv string) func(*irc.Conn, *irc.Line)
 func disconnectCallback(quit chan bool) func(*irc.Conn, *irc.Line) {
 	return func(conn *irc.Conn, line *irc.Line) {
 		quit <- true
-	}
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Wrapper to deliver !tell messages to the recipient. This will be used in //
-// several locations.                                                       //
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-func deliverTells(db *sql.DB, conn *irc.Conn, line *irc.Line) {
-	// Check for messages to this person who joined
-	rows, _ := db.Query(
-		"SELECT `id`, `from`, `body`, `date` FROM tells WHERE `to` = ? AND `channel` = ?",
-		line.Nick,
-		line.Args[0],
-	)
-
-	// Make map with rows to delete from database
-	toDelete := make(map[int]bool)
-
-	for rows.Next() {
-		var id int
-		var from string
-		var body string
-		var date string
-
-		// Fill vars with data
-		_ = rows.Scan(&id, &from, &body, &date)
-
-		// Remove the milliseconds from date
-		date = strings.Split(date, ".")[0]
-
-		// Print messages
-		go conn.Privmsg(line.Args[0], line.Nick+": \""+body+"\" -- "+from+" @ "+date)
-
-		// Append to map to delete
-		toDelete[id] = true
-	}
-
-	rows.Close()
-
-	// Loop trough the map with ids to remove
-	for id, _ := range toDelete {
-		stmt, _ := db.Prepare("DELETE FROM tells WHERE id = ?")
-		stmt.Exec(id)
-
-		stmt.Close()
 	}
 }
