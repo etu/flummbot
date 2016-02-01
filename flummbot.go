@@ -14,8 +14,8 @@ import (
 
 func main() {
 	var quit chan bool = make(chan bool)
-	var config flummbot.Config
 	var tells flummbot.Tells
+	var config flummbot.Config
 	var quotes flummbot.Quotes
 
 	// Load up config
