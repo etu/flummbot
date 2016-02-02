@@ -3,8 +3,9 @@
 [connection]
 channel = "#bottest"
 nick = "mybot"
-server = "irc.freenode.net:6667"
+server = "irc.freenode.net:6697"
 nickservIdentify = ""
+TLS = true
 
 [database]
 file = "flummbot.db"

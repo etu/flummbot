@@ -1,14 +1,18 @@
 package main
 
 import (
+	"crypto/tls"
 	"flummbot"
 	"fmt"
 	irc "github.com/fluffle/goirc/client"
+	"github.com/fluffle/goirc/logging/glog"
 	"gopkg.in/gcfg.v1"
 	"os"
 )
 
 func main() {
+	glog.Init()
+
 	var quit chan bool = make(chan bool)
 	var tells flummbot.Tells
 	var config flummbot.Config
@@ -38,8 +42,9 @@ func main() {
 
 	// Init irc-config
 	cfg := irc.NewConfig(config.Connection.Nick)
-	cfg.SSL = false
+	cfg.SSL = config.Connection.TLS
 	cfg.Server = config.Connection.Server
+	cfg.SSLConfig = &tls.Config{InsecureSkipVerify: true}
 
 	// Init irc-client
 	c := irc.Client(cfg)
