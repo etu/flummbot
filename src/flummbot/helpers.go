@@ -10,7 +10,7 @@ import (
 )
 
 type Helpers struct {
-	Config Config
+	Config *Config
 }
 
 func (h *Helpers) SetupDatabase() *sql.DB {

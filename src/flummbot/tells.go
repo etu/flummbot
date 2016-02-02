@@ -7,7 +7,7 @@ import (
 )
 
 type Tells struct {
-	Config Config
+	Config *Config
 	Db     *sql.DB
 }
 

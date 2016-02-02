@@ -22,15 +22,15 @@ func main() {
 	}
 
 	// Load up helpers
-	helpers = flummbot.Helpers{config}
+	helpers = flummbot.Helpers{&config}
 
 	// Load up database
 	db := helpers.SetupDatabase()
 	defer db.Close()
 
 	// Load up modules
-	quotes = flummbot.Quotes{config, db}
-	tells = flummbot.Tells{config, db}
+	quotes = flummbot.Quotes{&config, db}
+	tells = flummbot.Tells{&config, db}
 
 	// Init databases
 	tells.DbSetup()

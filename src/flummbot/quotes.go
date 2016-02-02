@@ -7,7 +7,7 @@ import (
 )
 
 type Quotes struct {
-	Config Config
+	Config *Config
 	Db     *sql.DB
 }
 
