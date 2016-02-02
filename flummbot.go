@@ -45,9 +45,9 @@ func main() {
 	c := irc.Client(cfg)
 
 	// Register callbacks
-	c = tells.RegisterCallbacks(c)
-	c = quotes.RegisterCallbacks(c)
-	c = helpers.RegisterCallbacks(c, quit)
+	tells.RegisterCallbacks(c)
+	quotes.RegisterCallbacks(c)
+	helpers.RegisterCallbacks(c, quit)
 
 	// Connect
 	if err := c.Connect(); err != nil {

@@ -23,15 +23,13 @@ func (q *Quotes) DbSetup() {
 	`)
 }
 
-func (q *Quotes) RegisterCallbacks(c *client.Conn) *client.Conn {
+func (q *Quotes) RegisterCallbacks(c *client.Conn) {
 	c.HandleFunc(
 		client.PRIVMSG,
 		func(conn *client.Conn, line *client.Line) {
 			go q.handle(conn, line)
 		},
 	)
-
-	return c
 }
 
 func (q *Quotes) handle(conn *client.Conn, line *client.Line) {

@@ -25,7 +25,7 @@ func (h *Helpers) SetupDatabase() *sql.DB {
 	return db
 }
 
-func (h *Helpers) RegisterCallbacks(c *client.Conn, q chan bool) *client.Conn {
+func (h *Helpers) RegisterCallbacks(c *client.Conn, q chan bool) {
 	c.HandleFunc(
 		client.CONNECTED,
 		func(conn *client.Conn, line *client.Line) {
@@ -54,6 +54,4 @@ func (h *Helpers) RegisterCallbacks(c *client.Conn, q chan bool) *client.Conn {
 			q <- true
 		},
 	)
-
-	return c
 }

@@ -24,7 +24,7 @@ func (t *Tells) DbSetup() {
 	`)
 }
 
-func (t *Tells) RegisterCallbacks(c *client.Conn) *client.Conn {
+func (t *Tells) RegisterCallbacks(c *client.Conn) {
 	c.HandleFunc(
 		client.JOIN,
 		func(conn *client.Conn, line *client.Line) {
@@ -39,8 +39,6 @@ func (t *Tells) RegisterCallbacks(c *client.Conn) *client.Conn {
 			go t.register(conn, line)
 		},
 	)
-
-	return c
 }
 
 func (t *Tells) register(conn *client.Conn, line *client.Line) {
