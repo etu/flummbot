@@ -5,7 +5,7 @@ channel = "#bottest"
 nick = "mybot"
 server = "irc.freenode.net:6697"
 nickservIdentify = ""
-TLS = true
+tls = true
 
 [database]
 file = "flummbot.db"
