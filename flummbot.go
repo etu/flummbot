@@ -17,16 +17,13 @@ func main() {
 	var tells flummbot.Tells
 	var config flummbot.Config
 	var quotes flummbot.Quotes
-	var helpers flummbot.Helpers
+	var helpers flummbot.Helpers = flummbot.Helpers{&config}
 
 	// Load up config
 	if err := gcfg.ReadFileInto(&config, "flummbot.gcfg"); err != nil {
 		fmt.Printf("Config error: %s\n", err)
 		os.Exit(1)
 	}
-
-	// Load up helpers
-	helpers = flummbot.Helpers{&config}
 
 	// Load up database
 	db := helpers.SetupDatabase()
