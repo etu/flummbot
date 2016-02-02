@@ -44,8 +44,10 @@ func (q *Quotes) handle(conn *client.Conn, line *client.Line) {
 		if len(msg) == 0 { // No message given: Fetch random quote
 			// Prepare query
 			stmt, _ := q.Db.Query(
-				"SELECT nick, quote, date FROM quotes " +
+				"SELECT nick, quote, date FROM quotes "+
+					"WHERE `channel` = ? "+
 					"ORDER BY RANDOM() LIMIT 1",
+				line.Args[0],
 			)
 			defer stmt.Close()
 
@@ -68,13 +70,14 @@ func (q *Quotes) handle(conn *client.Conn, line *client.Line) {
 
 		} else { // Add quote to database
 			// Prepare query
-			stmt, _ := q.Db.Prepare(
-				`INSERT INTO quotes("nick", "quote", "date") VALUES(?, ?, ?)`,
-			)
+			stmt, _ := q.Db.Prepare(`
+				INSERT INTO quotes("nick", "quote", "date", "channel")
+				VALUES(?, ?, ?, ?)
+			`)
 			defer stmt.Close()
 
-			// Exec query: nick, quote, date
-			stmt.Exec(line.Nick, msg, line.Time)
+			// Exec query: nick, quote, date, channel
+			stmt.Exec(line.Nick, msg, line.Time, line.Args[0])
 
 			// Respond in channel
 			conn.Privmsg(
