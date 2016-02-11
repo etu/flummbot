@@ -20,4 +20,9 @@ type Config struct {
 	Quotes struct {
 		Command string
 	}
+
+	Invite struct {
+		Message   string
+		Whitelist []string
+	}
 }

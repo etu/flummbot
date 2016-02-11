@@ -18,6 +18,7 @@ func main() {
 	var tells flummbot.Tells
 	var config flummbot.Config
 	var quotes flummbot.Quotes
+	var invite flummbot.Invite
 	var helpers flummbot.Helpers = flummbot.Helpers{&config}
 
 	// Read the configfile
@@ -40,6 +41,7 @@ func main() {
 	// Load up modules
 	quotes = flummbot.Quotes{&config, db}
 	tells = flummbot.Tells{&config, db}
+	invite = flummbot.Invite{&config}
 
 	// Init databases
 	tells.DbSetup()
@@ -57,6 +59,7 @@ func main() {
 	// Register callbacks
 	tells.RegisterCallbacks(c)
 	quotes.RegisterCallbacks(c)
+	invite.RegisterCallbacks(c)
 	helpers.RegisterCallbacks(c, quit)
 
 	// Connect
