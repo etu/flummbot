@@ -4,7 +4,8 @@
         "nick": "mybot",
         "server": "irc.freenode.net:6697",
         "nickservIdentify": "",
-        "tls": true
+        "tls": true,
+        "message": "Hello, I autojoined this channel."
     },
     "database": {
         "file": "flummbot.db"

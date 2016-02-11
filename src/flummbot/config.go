@@ -7,6 +7,7 @@ type Config struct {
 		Server           string
 		NickservIdentify string
 		TLS              bool
+		Message          string
 	}
 
 	Database struct {

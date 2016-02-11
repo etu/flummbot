@@ -44,7 +44,10 @@ func (h *Helpers) RegisterCallbacks(c *client.Conn, q chan bool) {
 			conn.Join(h.Config.Connection.Channel)
 
 			// Greet everyone
-			conn.Privmsg(h.Config.Connection.Channel, "Hejj")
+			conn.Privmsg(
+				h.Config.Connection.Channel,
+				h.Config.Connection.Message,
+			)
 		},
 	)
 
