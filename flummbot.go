@@ -2,11 +2,12 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"flummbot"
 	"fmt"
 	irc "github.com/fluffle/goirc/client"
 	"github.com/fluffle/goirc/logging/glog"
-	"gopkg.in/gcfg.v1"
+	"io/ioutil"
 	"os"
 )
 
@@ -19,9 +20,16 @@ func main() {
 	var quotes flummbot.Quotes
 	var helpers flummbot.Helpers = flummbot.Helpers{&config}
 
-	// Load up config
-	if err := gcfg.ReadFileInto(&config, "flummbot.gcfg"); err != nil {
-		fmt.Printf("Config error: %s\n", err)
+	// Read the configfile
+	file, err := ioutil.ReadFile("./flummbot.json")
+	if err != nil {
+		fmt.Printf("File error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Parse config
+	if err := json.Unmarshal(file, &config); err != nil {
+		fmt.Printf("Config error: %v\n", err)
 		os.Exit(1)
 	}
 

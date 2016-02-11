@@ -1,0 +1,18 @@
+{
+    "connection": {
+        "channel": "#bottest",
+        "nick": "mybot",
+        "server": "irc.freenode.net:6697",
+        "nickservIdentify": "",
+        "tls": true
+    },
+    "database": {
+        "file": "flummbot.db"
+    },
+    "tells": {
+        "command": "!tell"
+    },
+    "quotes": {
+        "command": "!quote"
+    }
+}
