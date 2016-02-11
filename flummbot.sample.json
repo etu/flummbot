@@ -14,5 +14,11 @@
     },
     "quotes": {
         "command": "!quote"
+    },
+    "invite": {
+        "message": "Hello, %s invited me here.",
+        "whitelist": [
+            "etu"
+        ]
     }
 }
