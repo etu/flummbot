@@ -11,16 +11,21 @@ Simple IRC-bot I wrote in golang for my irc-channel.
   - Join channels when requested by being invited. Also got a Whitelist.
 
 ** Install dependencies
-#+BEGIN_SRC shell
+#+begin_src shell
 go get github.com/fluffle/goirc/client
 go get github.com/fluffle/goirc/logging/glog
 go get github.com/mattn/go-sqlite3
-#+END_SRC
+#+end_src
 
-** Configure bot
-Copy the sample config =flummbot.sample.gcfg= to =flummbot.gcfg= and
+** Configure the bot
+Copy the sample config =flummbot.sample.json= to =flummbot.json= and
 change the values of =channel=, =nick=, =server= and possibly
 =nickservIdentify= if you want it to register to services.
 
-** Starting bot
+** Building the bot
+#+begin_src shell
+go build flummbot.go
+#+end_src
+
+** Starting the bot
 I've included a systemd-service file that I use to start my bot.
