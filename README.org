@@ -18,9 +18,31 @@ go get github.com/mattn/go-sqlite3
 #+end_src
 
 ** Configure the bot
-Copy the sample config =flummbot.sample.json= to =flummbot.json= and
-change the values of =channel=, =nick=, =server= and possibly
-=nickservIdentify= if you want it to register to services.
+Copy the sample config =flummbot.sample.json= to =flummbot.json= and look
+through the following sections.
+
+*** Connection
+Change the values of =channel=, =nick=, =server=, =tls= and =message=. You
+can also specify =nickservidentify= to set a message to send to NickServ on
+connect.
+
+*** Database
+=file= specifies file used for sqlite.
+
+*** Tells
+=command= specifies command used in the =!tell= module.
+
+*** Quotes
+=command= specifies command used in the =!quote= module.
+
+*** Invite
+=message= specifies message the bot tells in a channel it got invited to. We
+also use =Sprintf= to inject one variable into the string which contains the
+nick that invited the bot to the channel. Specify it with =%s= in this
+variable.
+
+=whitelist= is a json-list with nicks allowed to invite the bot to other
+channels.
 
 ** Building the bot
 #+begin_src shell
