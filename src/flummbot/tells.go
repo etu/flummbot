@@ -60,8 +60,14 @@ func (t *Tells) register(conn *client.Conn, line *client.Line) {
 		)
 		defer stmt.Close()
 
-		// Exec query: nick, target, msg, time,      channel
-		stmt.Exec(line.Nick, target, msg, line.Time, line.Args[0])
+		// Exec query: nick, target, msg, time, channel
+		stmt.Exec(
+			line.Nick,
+			strings.ToLower(target),
+			msg,
+			line.Time,
+			line.Args[0],
+		)
 
 		// Respond in channel
 		conn.Privmsg(
@@ -76,7 +82,7 @@ func (t *Tells) deliver(conn *client.Conn, line *client.Line) {
 	rows, _ := t.Db.Query(
 		"SELECT `id`, `from`, `body`, `date` "+
 			"FROM tells WHERE `to` = ? AND `channel` = ?",
-		line.Nick,
+		strings.ToLower(line.Nick),
 		line.Args[0],
 	)
 
