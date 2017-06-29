@@ -2,7 +2,7 @@ package flummbot
 
 type Config struct {
 	Connection struct {
-		Channel          string
+		Channels         []string
 		Nick             string
 		Server           string
 		NickservIdentify string

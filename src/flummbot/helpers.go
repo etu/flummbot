@@ -40,14 +40,13 @@ func (h *Helpers) RegisterCallbacks(c *client.Conn, q chan bool) {
 			// Sleep while auth happens
 			time.Sleep(time.Second)
 
-			// Then join channel
-			conn.Join(h.Config.Connection.Channel)
+			for _, channel := range h.Config.Connection.Channels {
+				// Then join channel
+				conn.Join(channel)
 
-			// Greet everyone
-			conn.Privmsg(
-				h.Config.Connection.Channel,
-				h.Config.Connection.Message,
-			)
+				// Greet everyone
+				conn.Privmsg(channel, h.Config.Connection.Message)
+			}
 		},
 	)
 

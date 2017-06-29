@@ -1,6 +1,6 @@
 {
     "connection": {
-        "channel": "#bottest",
+        "channels": [ "#bottest" ],
         "nick": "mybot",
         "server": "irc.freenode.net:6697",
         "nickservIdentify": "",
