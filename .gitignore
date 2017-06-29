@@ -2,5 +2,6 @@ pkg/
 src/github.com/
 src/golang.org/
 src/gopkg.in/
+flummbot
 flummbot.db
 flummbot.json
