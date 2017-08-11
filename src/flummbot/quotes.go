@@ -54,16 +54,21 @@ func (q *Quotes) handle(conn *client.Conn, line *client.Line) {
 			var qNick string
 			var qQuote string
 			var qDate string
+			var spacedNick string
 
 			stmt.Scan(&qNick, &qQuote, &qDate)
 
 			// Remove the milliseconds from date
 			qDate = strings.Split(qDate, ".")[0]
 
+			// Add zero-with-space between first and second letter to break
+			// highlighting of the creator when printing a quote.
+			spacedNick = qNick[0:1] + "\u200B" + qNick[1:]
+
 			// Return quote
 			conn.Privmsg(
 				line.Args[0],
-				"Quote added by "+qNick+" @ "+qDate+": "+qQuote,
+				"Quote added by "+spacedNick+" @ "+qDate+": "+qQuote,
 			)
 
 		} else { // Add quote to database
