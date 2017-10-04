@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"flag"
 	"flummbot"
 	"fmt"
 	"github.com/BurntSushi/toml"
@@ -12,10 +13,13 @@ import (
 )
 
 func main() {
+	configFilePtr := flag.String("config", "flummbot.toml", "Path to config file")
+	flag.Parse()
+
 	var config flummbot.Config
 
 	// Read the configfile
-	file, err := ioutil.ReadFile("flummbot.toml")
+	file, err := ioutil.ReadFile(*configFilePtr)
 	if err != nil {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
