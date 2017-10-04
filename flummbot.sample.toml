@@ -11,6 +11,7 @@ File = "flummbot.db"
 
 [Tells]
 Command = "!tell"
+AllowedChannels = [ "#bottest" ]
 
 [Quotes]
 Command = "!quote"

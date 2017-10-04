@@ -15,7 +15,8 @@ type Config struct {
 	}
 
 	Tells struct {
-		Command string
+		Command         string
+		AllowedChannels []string
 	}
 
 	Quotes struct {
