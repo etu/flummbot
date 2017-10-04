@@ -12,14 +12,7 @@ import (
 )
 
 func main() {
-	glog.Init()
-
-	var quit chan bool = make(chan bool)
-	var tells flummbot.Tells
 	var config flummbot.Config
-	var quotes flummbot.Quotes
-	var invite flummbot.Invite
-	var helpers flummbot.Helpers = flummbot.Helpers{&config}
 
 	// Read the configfile
 	file, err := ioutil.ReadFile("flummbot.toml")
@@ -33,6 +26,18 @@ func main() {
 		fmt.Printf("Config error: %v\n", err)
 		os.Exit(1)
 	}
+
+	runBot(config)
+}
+
+func runBot(config flummbot.Config) {
+	glog.Init()
+
+	var quit chan bool = make(chan bool)
+	var tells flummbot.Tells
+	var quotes flummbot.Quotes
+	var invite flummbot.Invite
+	var helpers flummbot.Helpers = flummbot.Helpers{&config}
 
 	// Load up database
 	db := helpers.SetupDatabase()
