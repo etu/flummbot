@@ -1,0 +1,20 @@
+[Connection]
+Channels = [ "#bottest" ]
+Nick = "mybot"
+Server = "irc.freenode.net:6697"
+NickservIdentify = ""
+TLS = true
+Message = "Hello, I autojoined this channel."
+
+[Database]
+File = "flummbot.db"
+
+[Tells]
+Command = "!tell"
+
+[Quotes]
+Command = "!quote"
+
+[Invite]
+Message = "Hello, %s invited me here."
+Whitelist = [ "etu" ]

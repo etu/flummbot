@@ -2,9 +2,9 @@ package main
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"flummbot"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	irc "github.com/fluffle/goirc/client"
 	"github.com/fluffle/goirc/logging/glog"
 	"io/ioutil"
@@ -22,14 +22,14 @@ func main() {
 	var helpers flummbot.Helpers = flummbot.Helpers{&config}
 
 	// Read the configfile
-	file, err := ioutil.ReadFile("./flummbot.json")
+	file, err := ioutil.ReadFile("flummbot.toml")
 	if err != nil {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Parse config
-	if err := json.Unmarshal(file, &config); err != nil {
+	if _, err := toml.Decode(string(file), &config); err != nil {
 		fmt.Printf("Config error: %v\n", err)
 		os.Exit(1)
 	}
