@@ -15,6 +15,7 @@ AllowedChannels = [ "#bottest" ]
 
 [Quotes]
 Command = "!quote"
+AllowedChannels = [ "#bottest" ]
 
 [Invite]
 Message = "Hello, %s invited me here."

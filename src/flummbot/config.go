@@ -20,7 +20,8 @@ type Config struct {
 	}
 
 	Quotes struct {
-		Command string
+		Command         string
+		AllowedChannels []string
 	}
 
 	Invite struct {

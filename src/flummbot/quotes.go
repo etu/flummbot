@@ -3,6 +3,7 @@ package flummbot
 import (
 	"database/sql"
 	"github.com/fluffle/goirc/client"
+	"sort"
 	"strings"
 )
 
@@ -34,6 +35,19 @@ func (q *Quotes) RegisterCallbacks(c *client.Conn) {
 
 func (q *Quotes) handle(conn *client.Conn, line *client.Line) {
 	cmd := strings.Split(line.Args[1], " ")[0]
+
+	// Look up if this module is allowed in the channel where it's used
+	channel := line.Args[0]
+	channels := q.Config.Quotes.AllowedChannels
+
+	sort.Strings(channels)
+	i := sort.SearchStrings(channels, channel)
+
+	// If it's not, complain in channel and just return
+	if i < len(channels) && channels[i] != channel {
+		conn.Privmsg(channel, "Module not enabled for this channel.")
+		return
+	}
 
 	if cmd == q.Config.Quotes.Command {
 		msg := strings.Replace(line.Args[1], q.Config.Quotes.Command, "", 1)
