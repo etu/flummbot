@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"flummbot"
 	"fmt"
 	"github.com/BurntSushi/toml"
 	irc "github.com/fluffle/goirc/client"
@@ -16,7 +15,7 @@ func main() {
 	configFilePtr := flag.String("config", "flummbot.toml", "Path to config file")
 	flag.Parse()
 
-	var config flummbot.Config
+	var config Config
 
 	// Read the configfile
 	file, err := ioutil.ReadFile(*configFilePtr)
@@ -34,23 +33,23 @@ func main() {
 	runBot(config)
 }
 
-func runBot(config flummbot.Config) {
+func runBot(config Config) {
 	glog.Init()
 
 	var quit chan bool = make(chan bool)
-	var tells flummbot.Tells
-	var quotes flummbot.Quotes
-	var invite flummbot.Invite
-	var helpers flummbot.Helpers = flummbot.Helpers{&config}
+	var tells Tells
+	var quotes Quotes
+	var invite Invite
+	var helpers Helpers = Helpers{&config}
 
 	// Load up database
 	db := helpers.SetupDatabase()
 	defer db.Close()
 
 	// Load up modules
-	quotes = flummbot.Quotes{&config, db}
-	tells = flummbot.Tells{&config, db}
-	invite = flummbot.Invite{&config}
+	quotes = Quotes{&config, db}
+	tells = Tells{&config, db}
+	invite = Invite{&config}
 
 	// Init databases
 	tells.DbSetup()

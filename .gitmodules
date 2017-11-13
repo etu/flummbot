@@ -1,0 +1,18 @@
+[submodule "vendor/src/golang.org/x/net"]
+	path = vendor/src/golang.org/x/net
+	url = https://go.googlesource.com/net
+[submodule "vendor/src/github.com/BurntSushi/toml"]
+	path = vendor/src/github.com/BurntSushi/toml
+	url = https://github.com/BurntSushi/toml
+[submodule "vendor/src/github.com/fluffle/goirc"]
+	path = vendor/src/github.com/fluffle/goirc
+	url = https://github.com/fluffle/goirc
+[submodule "vendor/src/github.com/golang/glog"]
+	path = vendor/src/github.com/golang/glog
+	url = https://github.com/golang/glog
+[submodule "vendor/src/github.com/golang/mock"]
+	path = vendor/src/github.com/golang/mock
+	url = https://github.com/golang/mock
+[submodule "vendor/src/github.com/mattn/go-sqlite3"]
+	path = vendor/src/github.com/mattn/go-sqlite3
+	url = https://github.com/mattn/go-sqlite3

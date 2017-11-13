@@ -12,10 +12,8 @@ Simple IRC-bot I wrote in golang for my irc-channel.
 
 ** Install dependencies
 #+begin_src shell
-go get github.com/fluffle/goirc/client
-go get github.com/fluffle/goirc/logging/glog
-go get github.com/mattn/go-sqlite3
-go get github.com/BurntSushi/toml
+git submodule init
+git submodule update
 #+end_src
 
 ** Configure the bot
@@ -47,7 +45,7 @@ channels.
 
 ** Building the bot
 #+begin_src shell
-go build flummbot.go
+make build
 #+end_src
 
 ** Starting the bot

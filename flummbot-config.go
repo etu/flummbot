@@ -1,4 +1,4 @@
-package flummbot
+package main
 
 type Config struct {
 	Connection struct {
