@@ -5,7 +5,8 @@ Simple IRC-bot I wrote in golang for my irc-channel.
   - Authenticate to services
   - Join channels
   - Listen to the command =!tell <person> <message>=
-  - Deliver =<message>= to =<person>= the next time =<person>= joins or say something
+  - Deliver =<message>= to =<person>= the next time =<person>= joins or say
+    something
   - Save quotes with the command =!quote <message>=
   - Tell random quote with the command =!quote=
   - Join channels when requested by being invited. Also got a Whitelist.
@@ -17,7 +18,7 @@ git submodule update
 #+end_src
 
 ** Configure the bot
-Copy the sample config =flummbot.sample.json= to =flummbot.json= and look
+Copy the sample config =flummbot.sample.toml= to =flummbot.toml= and look
 through the following sections.
 
 *** Connection
@@ -40,8 +41,7 @@ also use =Sprintf= to inject one variable into the string which contains the
 nick that invited the bot to the channel. Specify it with =%s= in this
 variable.
 
-=whitelist= is a json-list with nicks allowed to invite the bot to other
-channels.
+=whitelist= is a list with nicks allowed to invite the bot to other channels.
 
 ** Building the bot
 #+begin_src shell
