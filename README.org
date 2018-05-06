@@ -43,6 +43,12 @@ variable.
 
 =whitelist= is a list with nicks allowed to invite the bot to other channels.
 
+*** Sweet sweet Karmas
+=command= specifies command used in the =!karma= module.
+
+It also listenes words that ends with plusOperator and minusOperator (++ or
+-- as default) to change the karmas.
+
 ** Building the bot
 #+begin_src shell
 make build

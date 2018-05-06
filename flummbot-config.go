@@ -28,4 +28,11 @@ type Config struct {
 		Message   string
 		Whitelist []string
 	}
+
+	Karma struct {
+		PlusOperator    string
+		MinusOperator   string
+		Command         string
+		AllowedChannels []string
+	}
 }

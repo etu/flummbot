@@ -40,6 +40,7 @@ func runBot(config Config) {
 	var tells Tells
 	var quotes Quotes
 	var invite Invite
+	var karma Karma
 	var helpers Helpers = Helpers{&config}
 
 	// Load up database
@@ -49,11 +50,13 @@ func runBot(config Config) {
 	// Load up modules
 	quotes = Quotes{&config, db}
 	tells = Tells{&config, db}
+	karma = Karma{&config, db}
 	invite = Invite{&config}
 
 	// Init databases
 	tells.DbSetup()
 	quotes.DbSetup()
+	karma.DbSetup()
 
 	// Init irc-config
 	cfg := irc.NewConfig(config.Connection.Nick)
@@ -68,6 +71,7 @@ func runBot(config Config) {
 	tells.RegisterCallbacks(c)
 	quotes.RegisterCallbacks(c)
 	invite.RegisterCallbacks(c)
+	karma.RegisterCallbacks(c)
 	helpers.RegisterCallbacks(c, quit)
 
 	// Connect

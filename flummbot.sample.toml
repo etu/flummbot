@@ -20,3 +20,9 @@ AllowedChannels = [ "#bottest" ]
 [Invite]
 Message = "Hello, %s invited me here."
 Whitelist = [ "etu" ]
+
+[Karma]
+PlusOperator = "++"
+MinusOperator = "--"
+Command = "!karma"
+AllowedChannels = [ "#bottest" ]
