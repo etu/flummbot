@@ -57,6 +57,10 @@ func (k *Karma) handle(conn *client.Conn, line *client.Line) {
 	}
 
 	if cmd == k.Config.Karma.Command && len(words) > 1 {
+		if words[1] == "" {
+			return
+		}
+
 		stmt, _ := k.Db.Query(
 			"SELECT points FROM karma WHERE `item` = ?",
 			words[1],
@@ -81,11 +85,19 @@ func (k *Karma) handle(conn *client.Conn, line *client.Line) {
 		if len(plusOperator) > 1 && strings.HasSuffix(word, plusOperator) {
 			word = strings.Replace(word, plusOperator, "", 1)
 
+			if word == "" {
+				continue
+			}
+
 			wordDiffs[word] += 1
 		}
 
 		if len(minusOperator) > 1 && strings.HasSuffix(word, minusOperator) {
 			word = strings.Replace(word, minusOperator, "", 1)
+
+			if word == "" {
+				continue
+			}
 
 			wordDiffs[word] -= 1
 		}
