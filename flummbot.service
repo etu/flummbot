@@ -7,7 +7,7 @@ Wants=network.target
 Type=simple
 User=bots
 Group=bots
-ExecStart=/var/lib/bots/flummbot
+ExecStart=/var/lib/bots/flummbot -c /path/to/config.toml
 WorkingDirectory=/var/lib/bots/
 Restart=always
 

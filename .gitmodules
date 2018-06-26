@@ -16,3 +16,15 @@
 [submodule "vendor/src/github.com/mattn/go-sqlite3"]
 	path = vendor/src/github.com/mattn/go-sqlite3
 	url = https://github.com/mattn/go-sqlite3
+[submodule "vendor/src/github.com/akamensky/argparse"]
+	path = vendor/src/github.com/akamensky/argparse
+	url = https://github.com/akamensky/argparse
+[submodule "vendor/src/github.com/jinzhu/inflection"]
+	path = vendor/src/github.com/jinzhu/inflection
+	url = https://github.com/jinzhu/inflection
+[submodule "vendor/src/github.com/jinzhu/gorm"]
+	path = vendor/src/github.com/jinzhu/gorm
+	url = https://github.com/jinzhu/gorm
+[submodule "vendor/src/github.com/thoj/go-ircevent"]
+	path = vendor/src/github.com/thoj/go-ircevent
+	url = https://github.com/thoj/go-ircevent

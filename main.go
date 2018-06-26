@@ -1,86 +1,74 @@
 package main
 
 import (
-	"crypto/tls"
-	"flag"
-	"fmt"
-	"github.com/BurntSushi/toml"
-	irc "github.com/fluffle/goirc/client"
-	"github.com/fluffle/goirc/logging/glog"
-	"io/ioutil"
-	"os"
+	"./src/args"
+	"./src/config"
+	"./src/db"
+	"./src/irc"
+	"./src/modules"
 )
 
 func main() {
-	configFilePtr := flag.String("config", "flummbot.toml", "Path to config file")
-	flag.Parse()
+	connections := make(map[string]irc.IrcConnection)
+	chQuitted := make(chan string)
 
-	var config Config
+	cmdArguments := args.Parse()
 
-	// Read the configfile
-	file, err := ioutil.ReadFile(*configFilePtr)
-	if err != nil {
-		fmt.Printf("File error: %v\n", err)
-		os.Exit(1)
+	// Parse config file
+	config := config.New(cmdArguments.ConfigFile)
+
+	// Set up database
+	database := db.New(&config)
+	defer database.Gorm.Close()
+
+	// Set up modules
+	moduleTells := modules.Tells{&config, &database}
+	moduleTells.DbSetup()
+
+	moduleKarma := modules.Karma{&config, &database}
+	moduleKarma.DbSetup()
+
+	moduleQuotes := modules.Quotes{&config, &database}
+	moduleQuotes.DbSetup()
+
+	// Set up connections per network connection defined
+	for _, network := range config.Connections {
+		config := irc.Config{
+			Name:             network.Name,
+			Server:           network.Server,
+			Port:             network.Port,
+			Channels:         network.Channels,
+			User:             network.User,
+			Nick:             network.Nick,
+			Password:         network.Password,
+			UseTLS:           network.UseTLS,
+			ClientVersion:    "flummbot 2.0.0-alpha1",
+			NickservIdentify: network.NickservIdentify,
+			Debug:            cmdArguments.Debug,
+		}
+
+		conn := irc.New(&config, database)
+
+		// Register callbacks for modules
+		moduleTells.RegisterCallbacks(&conn)
+		moduleKarma.RegisterCallbacks(&conn)
+		moduleQuotes.RegisterCallbacks(&conn)
+
+		// Run client
+		go conn.Run(chQuitted)
+
+		// Store connection in map to keep track of it
+		connections[network.Name] = conn
 	}
 
-	// Parse config
-	if _, err := toml.Decode(string(file), &config); err != nil {
-		fmt.Printf("Config error: %v\n", err)
-		os.Exit(1)
+	// While we have active connections
+	for len(connections) > 0 {
+		select {
+		case quitted := <-chQuitted:
+			// Delete quitted connections from the list of connections
+			delete(connections, quitted)
+		}
 	}
 
-	runBot(config)
-}
-
-func runBot(config Config) {
-	glog.Init()
-
-	var quit chan bool = make(chan bool)
-	var tells Tells
-	var quotes Quotes
-	var invite Invite
-	var karma Karma
-	var helpers Helpers = Helpers{&config}
-
-	// Load up database
-	db := helpers.SetupDatabase()
-	defer db.Close()
-
-	// Load up modules
-	quotes = Quotes{&config, db}
-	tells = Tells{&config, db}
-	karma = Karma{&config, db}
-	invite = Invite{&config}
-
-	// Init databases
-	tells.DbSetup()
-	quotes.DbSetup()
-	karma.DbSetup()
-
-	// Init irc-config
-	cfg := irc.NewConfig(config.Connection.Nick)
-	cfg.SSL = config.Connection.TLS
-	cfg.Server = config.Connection.Server
-	cfg.SSLConfig = &tls.Config{InsecureSkipVerify: true}
-
-	// Init irc-client
-	c := irc.Client(cfg)
-
-	// Register callbacks
-	tells.RegisterCallbacks(c)
-	quotes.RegisterCallbacks(c)
-	invite.RegisterCallbacks(c)
-	karma.RegisterCallbacks(c)
-	helpers.RegisterCallbacks(c, quit)
-
-	// Connect
-	if err := c.Connect(); err != nil {
-		fmt.Printf("Connection error: %s\n", err.Error())
-
-		os.Exit(1)
-	}
-
-	// Wait for disconnect
-	<-quit
+	// End program when we don't have any connections left
 }

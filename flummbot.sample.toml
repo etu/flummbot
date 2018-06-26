@@ -1,28 +1,42 @@
-[Connection]
-Channels = [ "#bottest" ]
-Nick = "mybot"
-Server = "irc.freenode.net:6697"
-NickservIdentify = ""
-TLS = true
-Message = "Hello, I autojoined this channel."
+# This block can be repeated as many times as you wish.
+#
+# For sanity, please keep the name of your connection unique, this is
+# needed for the keeping track of connections.
+[[Connections]]
+Name = "freenode"
+Server = "irc.freenode.net"
+Port = 6697
+Channels = [ "#botwar" ]
+User = "flummbot"
+Nick = "flummbot"
+UseTLS = true
+NickservIdentify = "IDENTIFY MyNickservPassword"
 
+
+# Settings to connect to a database for storage of backlogs and some
+# other potentially stateful data that needs to be stored.
+#
+# Some examples of how to connect here:
+# http://gorm.io/docs/connecting_to_the_database.html
+#
+# Currently we only support sqlite3, but postgresql is planned.
 [Database]
-File = "flummbot.db"
+Dialect = "sqlite3"
+Args = "flummbot.db"
 
-[Tells]
+
+# Enable Tolls module to relay messages
+[Modules.Tells]
 Command = "!tell"
-AllowedChannels = [ "#bottest" ]
 
-[Quotes]
+
+# Enable the quotes module to store quotes
+[Modules.Quotes]
 Command = "!quote"
-AllowedChannels = [ "#bottest" ]
 
-[Invite]
-Message = "Hello, %s invited me here."
-Whitelist = [ "etu" ]
 
-[Karma]
+# Enable the karma module
+[Modules.Karma]
 PlusOperator = "++"
 MinusOperator = "--"
 Command = "!karma"
-AllowedChannels = [ "#bottest" ]
