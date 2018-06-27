@@ -47,7 +47,7 @@ func (k *Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 		var karma KarmaModel
-		k.Db.Gorm.Model(&KarmaModel{Item: words[1]}).First(&karma)
+		k.Db.Gorm.Where(&KarmaModel{Item: words[1]}).First(&karma)
 
 		c.IrcEventConnection.Privmsg(
 			e.Arguments[0],
