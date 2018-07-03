@@ -42,16 +42,6 @@ func New(config *Config, db db.Db) IrcConnection {
 	ic := IrcConnection{ircEvent, config, db}
 
 	ircEvent.AddCallback("001", ic.onWelcome)
-	ircEvent.AddCallback("332", ic.callbackHandler)
-	ircEvent.AddCallback("353", ic.callbackHandler)
-	ircEvent.AddCallback("CTCP_ACTION", ic.callbackHandler)
-	ircEvent.AddCallback("JOIN", ic.callbackHandler)
-	ircEvent.AddCallback("MODE", ic.callbackHandler)
-	ircEvent.AddCallback("NICK", ic.callbackHandler)
-	ircEvent.AddCallback("NOTICE", ic.callbackHandler)
-	ircEvent.AddCallback("PART", ic.callbackHandler)
-	ircEvent.AddCallback("PRIVMSG", ic.callbackHandler)
-	ircEvent.AddCallback("TOPIC", ic.callbackHandler)
 
 	return ic
 }
@@ -67,40 +57,6 @@ func (i *IrcConnection) Run(chQuitted chan string) {
 	i.IrcEventConnection.Loop()
 
 	chQuitted <- i.Config.Name
-}
-
-func (i *IrcConnection) callbackHandler(e *ircevent.Event) {
-	switch e.Code {
-	case "PRIVMSG": // Event for regular messages
-		fmt.Println("got privmsg")
-
-	case "332": // Event for topics you get on join
-	case "TOPIC": // Event for topics on change
-		fmt.Println("got topic")
-
-	case "353": // Event for nick-list on join
-		fmt.Println("got nick list on join")
-
-	case "JOIN": // Event for channel joins
-		fmt.Println("someone joined the channel")
-
-	case "PART": // Event for channel leaves
-		fmt.Println("someone left the channel")
-
-	case "MODE": // Event for mode changes
-		fmt.Println("got mode change")
-
-	case "NICK": // Event for nick-changes
-		fmt.Println("got nick change")
-
-	case "NOTICE": // Event for notices
-		fmt.Println("got notice")
-
-	case "CTCP_ACTION": // Event for /me actions
-		fmt.Println("got ctcp_action")
-	}
-
-	fmt.Println(e)
 }
 
 func (i *IrcConnection) onWelcome(e *ircevent.Event) {
