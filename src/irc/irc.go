@@ -6,6 +6,7 @@ import (
 	"fmt"
 	ircevent "github.com/thoj/go-ircevent"
 	"log"
+	"time"
 )
 
 type Config struct {
@@ -105,7 +106,9 @@ func (i *IrcConnection) callbackHandler(e *ircevent.Event) {
 func (i *IrcConnection) onWelcome(e *ircevent.Event) {
 	// Identify to nickserv before joining channels
 	if len(i.Config.NickservIdentify) > 0 {
-		i.IrcEventConnection.Privmsg("Nickserv", i.Config.NickservIdentify)
+		fmt.Println("Sending: '" + i.Config.NickservIdentify + "' to nickserv")
+		i.IrcEventConnection.Privmsg("nickserv", i.Config.NickservIdentify)
+		time.Sleep(time.Second)
 	}
 
 	for _, channel := range i.Config.Channels {
