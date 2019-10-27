@@ -1,11 +1,11 @@
-package main
+package main // import "github.com/etu/flummbot"
 
 import (
-	"./src/args"
-	"./src/config"
-	"./src/db"
-	"./src/irc"
-	"./src/modules"
+	"github.com/etu/flummbot/src/args"
+	"github.com/etu/flummbot/src/config"
+	"github.com/etu/flummbot/src/db"
+	"github.com/etu/flummbot/src/irc"
+	"github.com/etu/flummbot/src/modules"
 )
 
 func main() {

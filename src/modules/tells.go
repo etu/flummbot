@@ -1,9 +1,9 @@
 package modules
 
 import (
-	"../config"
-	"../db"
-	"../irc"
+	"github.com/etu/flummbot/src/config"
+	"github.com/etu/flummbot/src/db"
+	"github.com/etu/flummbot/src/irc"
 	"github.com/jinzhu/gorm"
 	ircevent "github.com/thoj/go-ircevent"
 	"strings"

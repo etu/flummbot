@@ -1,7 +1,7 @@
 package db
 
 import (
-	"../config"
+	"github.com/etu/flummbot/src/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"log"

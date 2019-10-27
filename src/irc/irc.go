@@ -1,7 +1,7 @@
 package irc
 
 import (
-	"../db"
+	"github.com/etu/flummbot/src/db"
 	"crypto/tls"
 	"fmt"
 	ircevent "github.com/thoj/go-ircevent"
