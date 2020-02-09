@@ -24,16 +24,19 @@ type ClientConfig struct {
 		Args    string
 	}
 	Modules struct {
-		Tells struct {
-			Command string
-		}
-		Quotes struct {
-			Command string
+		Corrections struct {
+			Separator string
 		}
 		Karma struct {
 			PlusOperator  string
 			MinusOperator string
 			Command       string
+		}
+		Quotes struct {
+			Command string
+		}
+		Tells struct {
+			Command string
 		}
 	}
 }

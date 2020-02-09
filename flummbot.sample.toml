@@ -24,19 +24,21 @@ NickservIdentify = "IDENTIFY MyNickservPassword"
 Dialect = "sqlite3"
 Args = "flummbot.db"
 
-
-# Enable Tolls module to relay messages
-[Modules.Tells]
-Command = "!tell"
-
-
-# Enable the quotes module to store quotes
-[Modules.Quotes]
-Command = "!quote"
-
+# Correction module to allow users doing "s/foo/bar" style string replacement of previous messages
+[Modules.Corrections]
+Separator = "/"
 
 # Enable the karma module
 [Modules.Karma]
 PlusOperator = "++"
 MinusOperator = "--"
 Command = "!karma"
+
+# Enable the quotes module to store quotes
+[Modules.Quotes]
+Command = "!quote"
+
+
+# Enable Tolls module to relay messages
+[Modules.Tells]
+Command = "!tell"

@@ -49,6 +49,10 @@ variable.
 It also listenes words that ends with plusOperator and minusOperator (++ or
 -- as default) to change the karmas.
 
+*** Corrections
+=separator= specifies which character that should be used as separator in
+=s/foo/bar=-style corrections.
+
 ** Building the bot
 #+begin_src shell
 make build
