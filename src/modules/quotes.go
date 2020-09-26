@@ -22,11 +22,11 @@ type Quotes struct {
 	Db     *db.Db
 }
 
-func (q *Quotes) DbSetup() {
+func (q Quotes) DbSetup() {
 	q.Db.Gorm.AutoMigrate(&QuotesModel{})
 }
 
-func (q *Quotes) RegisterCallbacks(c *irc.IrcConnection) {
+func (q Quotes) RegisterCallbacks(c *irc.IrcConnection) {
 	c.IrcEventConnection.AddCallback(
 		"PRIVMSG",
 		func(e *ircevent.Event) {
@@ -35,7 +35,7 @@ func (q *Quotes) RegisterCallbacks(c *irc.IrcConnection) {
 	)
 }
 
-func (q *Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
+func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	cmd := strings.Split(e.Message(), " ")[0]
 
 	if cmd == q.Config.Modules.Quotes.Command {

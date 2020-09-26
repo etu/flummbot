@@ -22,11 +22,11 @@ type Corrections struct {
 	Db     *db.Db
 }
 
-func (c *Corrections) DbSetup() {
+func (c Corrections) DbSetup() {
 	c.Db.Gorm.AutoMigrate(&CorrectionsModel{})
 }
 
-func (c *Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
+func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 	conn.IrcEventConnection.AddCallback(
 		"PRIVMSG",
 		func(e *ircevent.Event) {
@@ -35,7 +35,7 @@ func (c *Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 	)
 }
 
-func (c *Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
+func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 	var correction CorrectionsModel
 
 	msg := strings.Trim(e.Message(), " ")

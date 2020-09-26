@@ -22,15 +22,17 @@ func main() {
 	defer database.Gorm.Close()
 
 	// Set up modules
-	moduleCorrections := modules.Corrections{&config, &database}
-	moduleKarma := modules.Karma{&config, &database}
-	moduleQuotes := modules.Quotes{&config, &database}
-	moduleTells := modules.Tells{&config, &database}
+	modules := [...]modules.Module{
+		modules.Corrections{&config, &database},
+		modules.Karma{&config, &database},
+		modules.Quotes{&config, &database},
+		modules.Tells{&config, &database},
+	}
 
-	moduleCorrections.DbSetup()
-	moduleKarma.DbSetup()
-	moduleQuotes.DbSetup()
-	moduleTells.DbSetup()
+	// Set up databases
+	for _, module := range modules {
+		module.DbSetup()
+	}
 
 	// Set up connections per network connection defined
 	for _, network := range config.Connections {
@@ -51,10 +53,9 @@ func main() {
 		conn := irc.New(&config, database)
 
 		// Register callbacks for modules
-		moduleCorrections.RegisterCallbacks(&conn)
-		moduleKarma.RegisterCallbacks(&conn)
-		moduleQuotes.RegisterCallbacks(&conn)
-		moduleTells.RegisterCallbacks(&conn)
+		for _, module := range modules {
+			module.RegisterCallbacks(&conn)
+		}
 
 		// Run client
 		go conn.Run(chQuitted)

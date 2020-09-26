@@ -21,11 +21,11 @@ type Karma struct {
 	Db     *db.Db
 }
 
-func (k *Karma) DbSetup() {
+func (k Karma) DbSetup() {
 	k.Db.Gorm.AutoMigrate(&KarmaModel{})
 }
 
-func (k *Karma) RegisterCallbacks(c *irc.IrcConnection) {
+func (k Karma) RegisterCallbacks(c *irc.IrcConnection) {
 	c.IrcEventConnection.AddCallback(
 		"PRIVMSG",
 		func(e *ircevent.Event) {
@@ -34,7 +34,7 @@ func (k *Karma) RegisterCallbacks(c *irc.IrcConnection) {
 	)
 }
 
-func (k *Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
+func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	plusOperator := k.Config.Modules.Karma.PlusOperator
 	minusOperator := k.Config.Modules.Karma.MinusOperator
 

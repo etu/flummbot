@@ -1,6 +1,10 @@
 package modules
 
+import (
+	"github.com/etu/flummbot/src/irc"
+)
+
 type Module interface {
 	DbSetup()
-	RegisterCallbacks()
+	RegisterCallbacks(*irc.IrcConnection)
 }

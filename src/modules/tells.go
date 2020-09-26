@@ -23,11 +23,11 @@ type Tells struct {
 	Db     *db.Db
 }
 
-func (t *Tells) DbSetup() {
+func (t Tells) DbSetup() {
 	t.Db.Gorm.AutoMigrate(&TellsModel{})
 }
 
-func (t *Tells) RegisterCallbacks(c *irc.IrcConnection) {
+func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
 	c.IrcEventConnection.AddCallback(
 		"JOIN",
 		func(e *ircevent.Event) {
@@ -44,7 +44,7 @@ func (t *Tells) RegisterCallbacks(c *irc.IrcConnection) {
 	)
 }
 
-func (t *Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
+func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 	parts := strings.Split(e.Message(), " ")
 
 	if parts[0] == t.Config.Modules.Tells.Command && len(parts) > 2 {
@@ -63,7 +63,7 @@ func (t *Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 	}
 }
 
-func (t *Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
+func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 	rows, _ := t.Db.Gorm.Model(&TellsModel{}).Where(&TellsModel{
 		Network: c.Config.Name,
 		Channel: e.Arguments[0],
