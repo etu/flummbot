@@ -23,10 +23,10 @@ func main() {
 
 	// Set up modules
 	modules := [...]modules.Module{
-		modules.Corrections{&config, &database},
-		modules.Karma{&config, &database},
-		modules.Quotes{&config, &database},
-		modules.Tells{&config, &database},
+		modules.Corrections{Config: &config, Db: &database},
+		modules.Karma{Config: &config, Db: &database},
+		modules.Quotes{Config: &config, Db: &database},
+		modules.Tells{Config: &config, Db: &database},
 	}
 
 	// Set up databases
