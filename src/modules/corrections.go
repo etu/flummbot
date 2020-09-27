@@ -89,7 +89,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 			}
 		}
 
-	} else { // Record and clean messages for this user
+	} else { // Record messages for this user
 		correction = CorrectionsModel{
 			Nick:    e.Nick,
 			Body:    msg,
@@ -98,31 +98,33 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 		c.Db.Gorm.Create(&correction)
+	}
 
-		var userCorrections []CorrectionsModel
+	// When everything is done, let's go through and clean up so we don't store too
+	// many messages for the user
+	var userCorrections []CorrectionsModel
 
-		// Select old items
-		rows, _ := c.Db.Gorm.Model(&CorrectionsModel{}).Where(&CorrectionsModel{
-			Nick:    e.Nick,
-			Network: conn.Config.Name,
-			Channel: e.Arguments[0],
-		}).Rows()
+	// Select all items
+	rows, _ := c.Db.Gorm.Model(&CorrectionsModel{}).Where(&CorrectionsModel{
+		Nick:    e.Nick,
+		Network: conn.Config.Name,
+		Channel: e.Arguments[0],
+	}).Rows()
 
-		// Aggregate all items in a slice
-		for rows.Next() {
-			c.Db.Gorm.ScanRows(rows, &correction)
+	// Aggregate all items in a slice
+	for rows.Next() {
+		c.Db.Gorm.ScanRows(rows, &correction)
 
-			userCorrections = append(userCorrections, correction)
-		}
+		userCorrections = append(userCorrections, correction)
+	}
 
-		// Read user log size from config
-		userLogSize := c.Config.Modules.Corrections.UserLogSize
+	// Read user log size from config
+	userLogSize := c.Config.Modules.Corrections.UserLogSize
 
-		if len(userCorrections) > userLogSize {
-			// Remove all but the three last items in the correction log
-			for _, correction := range userCorrections[:len(userCorrections)-userLogSize] {
-				c.Db.Gorm.Unscoped().Delete(correction)
-			}
+	if len(userCorrections) > userLogSize {
+		// Remove all but the configured last items in the correction log
+		for _, correction := range userCorrections[:len(userCorrections)-userLogSize] {
+			c.Db.Gorm.Unscoped().Delete(correction)
 		}
 	}
 }
