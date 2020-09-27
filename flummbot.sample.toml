@@ -27,6 +27,7 @@ Args = "flummbot.db"
 # Correction module to allow users doing "s/foo/bar" style string replacement of previous messages
 [Modules.Corrections]
 Separator = "/"
+UserLogSize = 3
 
 # Enable the karma module
 [Modules.Karma]

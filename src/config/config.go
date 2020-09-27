@@ -25,7 +25,8 @@ type ClientConfig struct {
 	}
 	Modules struct {
 		Corrections struct {
-			Separator string
+			Separator   string
+			UserLogSize int
 		}
 		Karma struct {
 			PlusOperator  string

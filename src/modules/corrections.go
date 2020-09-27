@@ -44,25 +44,49 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 	// Check so we don't go out of bounds and look for the prefix
 	if len(msg) > 1 && msg[0:2] == prefix {
-		c.Db.Gorm.Where(&CorrectionsModel{
+		rows, err := c.Db.Gorm.Model(&CorrectionsModel{}).Where(&CorrectionsModel{
 			Nick:    e.Nick,
 			Network: conn.Config.Name,
 			Channel: e.Arguments[0],
-		}).Last(&correction)
+		}).Order("ID DESC").Rows()
+
+		if err != nil {
+			panic(err)
+		}
 
 		// Split replacement message
 		subs := strings.Split(e.Message(), separator)
 
-		// Check so we don't go out of bounds
-		if len(subs) > 2 && strings.Contains(correction.Body, subs[1]) {
-			// Correct string
-			corrected := strings.ReplaceAll(correction.Body, subs[1], subs[2])
+		if len(subs) > 2 {
+			for rows.Next() {
+				c.Db.Gorm.ScanRows(rows, &correction)
 
-			// Respond on IRC
-			conn.IrcEventConnection.Privmsg(
-				e.Arguments[0],
-				"What "+e.Nick+" meant to say was: "+corrected,
-			)
+				if strings.Contains(correction.Body, subs[1]) {
+					// Correct string
+					corrected := strings.ReplaceAll(correction.Body, subs[1], subs[2])
+
+					rows.Close()
+
+					// Store in model
+					correction = CorrectionsModel{
+						Nick:    e.Nick,
+						Body:    corrected,
+						Network: conn.Config.Name,
+						Channel: e.Arguments[0],
+					}
+
+					// Save the corrected one to the database as a new entry
+					c.Db.Gorm.Create(&correction)
+
+					// Respond on IRC
+					conn.IrcEventConnection.Privmsg(
+						e.Arguments[0],
+						"What "+e.Nick+" meant to say was: "+corrected,
+					)
+
+					break
+				}
+			}
 		}
 
 	} else { // Record and clean messages for this user
@@ -75,23 +99,30 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 		c.Db.Gorm.Create(&correction)
 
-		for {
-			var correctionToDelete CorrectionsModel
+		var userCorrections []CorrectionsModel
 
-			// Select old items
-			c.Db.Gorm.Where(&CorrectionsModel{
-				Nick:    e.Nick,
-				Network: conn.Config.Name,
-				Channel: e.Arguments[0],
-			}).First(&correctionToDelete)
+		// Select old items
+		rows, _ := c.Db.Gorm.Model(&CorrectionsModel{}).Where(&CorrectionsModel{
+			Nick:    e.Nick,
+			Network: conn.Config.Name,
+			Channel: e.Arguments[0],
+		}).Rows()
 
-			// Make sure to not clash with the newly added item
-			if correction.ID == correctionToDelete.ID {
-				break
+		// Aggregate all items in a slice
+		for rows.Next() {
+			c.Db.Gorm.ScanRows(rows, &correction)
+
+			userCorrections = append(userCorrections, correction)
+		}
+
+		// Read user log size from config
+		userLogSize := c.Config.Modules.Corrections.UserLogSize
+
+		if len(userCorrections) > userLogSize {
+			// Remove all but the three last items in the correction log
+			for _, correction := range userCorrections[:len(userCorrections)-userLogSize] {
+				c.Db.Gorm.Unscoped().Delete(correction)
 			}
-
-			// Do a real delete of this item
-			c.Db.Gorm.Unscoped().Delete(correctionToDelete)
 		}
 	}
 }
