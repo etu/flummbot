@@ -54,7 +54,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 		subs := strings.Split(e.Message(), separator)
 
 		// Check so we don't go out of bounds
-		if len(subs) > 2 {
+		if len(subs) > 2 && strings.Contains(correction.Body, subs[1]) {
 			// Correct string
 			corrected := strings.ReplaceAll(correction.Body, subs[1], subs[2])
 
