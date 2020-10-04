@@ -4,6 +4,6 @@ mkShell {
   buildInputs = [
     gnumake
     go
-    gocode
+    gopls
   ];
 }
