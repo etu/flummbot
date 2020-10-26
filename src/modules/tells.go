@@ -57,7 +57,7 @@ func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 	if parts[0] == t.Config.Modules.Tells.Command && len(parts) > 2 {
 		t.Db.Gorm.Create(&TellsModel{
 			From:    e.Nick,
-			To:      parts[1],
+			To:      strings.ToLower(parts[1]),
 			Network: c.Config.Name,
 			Channel: e.Arguments[0],
 			Body:    strings.Join(parts[2:], " "),
@@ -74,7 +74,7 @@ func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 	rows, _ := t.Db.Gorm.Model(&TellsModel{}).Where(&TellsModel{
 		Network: c.Config.Name,
 		Channel: e.Arguments[0],
-		To:      e.Nick,
+		To:      strings.ToLower(e.Nick),
 	}).Rows()
 	defer rows.Close()
 
