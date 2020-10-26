@@ -11,12 +11,6 @@ Simple IRC-bot I wrote in golang for my irc-channel.
   - Tell random quote with the command =!quote=
   - Join channels when requested by being invited. Also got a Whitelist.
 
-** Install dependencies
-#+begin_src shell
-git submodule init
-git submodule update
-#+end_src
-
 ** Configure the bot
 Copy the sample config =flummbot.sample.toml= to =flummbot.toml= and look
 through the following sections.
