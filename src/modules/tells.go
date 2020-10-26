@@ -42,6 +42,13 @@ func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
 			go t.register(c, e)
 		},
 	)
+
+	c.IrcEventConnection.AddCallback(
+		"CTCP_ACTION",
+		func(e *ircevent.Event) {
+			go t.deliver(c, e)
+		},
+	)
 }
 
 func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
@@ -93,7 +100,7 @@ func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 	rows.Close()
 
 	// Loop trough the map with ids to remove
-	for id, _ := range toDelete {
+	for id := range toDelete {
 		t.Db.Gorm.Unscoped().Where("id = ?", id).Delete(&TellsModel{})
 	}
 }
