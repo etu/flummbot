@@ -26,20 +26,24 @@ Args = "flummbot.db"
 
 # Correction module to allow users doing "s/foo/bar" style string replacement of previous messages
 [Modules.Corrections]
+Enable = true
 Separator = "/"
 UserLogSize = 3
 
 # Enable the karma module
 [Modules.Karma]
+Enable = true
 PlusOperator = "++"
 MinusOperator = "--"
 Command = "!karma"
 
 # Enable the quotes module to store quotes
 [Modules.Quotes]
+Enable = true
 Command = "!quote"
 
 
 # Enable Tolls module to relay messages
 [Modules.Tells]
+Enable = true
 Command = "!tell"

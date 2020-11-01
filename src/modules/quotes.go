@@ -1,22 +1,25 @@
 package modules
 
 import (
+	"strings"
+
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
 	ircevent "github.com/thoj/go-ircevent"
-	"strings"
 )
 
 type Quotes struct{}
 
 func (q Quotes) RegisterCallbacks(c *irc.IrcConnection) {
-	c.IrcEventConnection.AddCallback(
-		"PRIVMSG",
-		func(e *ircevent.Event) {
-			go q.handle(c, e)
-		},
-	)
+	if config.Get().Modules.Quotes.Enable {
+		c.IrcEventConnection.AddCallback(
+			"PRIVMSG",
+			func(e *ircevent.Event) {
+				go q.handle(c, e)
+			},
+		)
+	}
 }
 
 func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {

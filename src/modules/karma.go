@@ -1,23 +1,26 @@
 package modules
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
 	ircevent "github.com/thoj/go-ircevent"
-	"strconv"
-	"strings"
 )
 
 type Karma struct{}
 
 func (k Karma) RegisterCallbacks(c *irc.IrcConnection) {
-	c.IrcEventConnection.AddCallback(
-		"PRIVMSG",
-		func(e *ircevent.Event) {
-			go k.handle(c, e)
-		},
-	)
+	if config.Get().Modules.Karma.Enable {
+		c.IrcEventConnection.AddCallback(
+			"PRIVMSG",
+			func(e *ircevent.Event) {
+				go k.handle(c, e)
+			},
+		)
+	}
 }
 
 func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {

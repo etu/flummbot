@@ -1,37 +1,40 @@
 package modules
 
 import (
+	"strings"
+
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
 	ircevent "github.com/thoj/go-ircevent"
-	"strings"
 )
 
 type Tells struct{}
 
 func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
-	c.IrcEventConnection.AddCallback(
-		"JOIN",
-		func(e *ircevent.Event) {
-			go t.deliver(c, e)
-		},
-	)
+	if config.Get().Modules.Tells.Enable {
+		c.IrcEventConnection.AddCallback(
+			"JOIN",
+			func(e *ircevent.Event) {
+				go t.deliver(c, e)
+			},
+		)
 
-	c.IrcEventConnection.AddCallback(
-		"PRIVMSG",
-		func(e *ircevent.Event) {
-			go t.deliver(c, e)
-			go t.register(c, e)
-		},
-	)
+		c.IrcEventConnection.AddCallback(
+			"PRIVMSG",
+			func(e *ircevent.Event) {
+				go t.deliver(c, e)
+				go t.register(c, e)
+			},
+		)
 
-	c.IrcEventConnection.AddCallback(
-		"CTCP_ACTION",
-		func(e *ircevent.Event) {
-			go t.deliver(c, e)
-		},
-	)
+		c.IrcEventConnection.AddCallback(
+			"CTCP_ACTION",
+			func(e *ircevent.Event) {
+				go t.deliver(c, e)
+			},
+		)
+	}
 }
 
 func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {

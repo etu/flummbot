@@ -1,22 +1,25 @@
 package modules
 
 import (
+	"strings"
+
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
 	ircevent "github.com/thoj/go-ircevent"
-	"strings"
 )
 
 type Corrections struct{}
 
 func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
-	conn.IrcEventConnection.AddCallback(
-		"PRIVMSG",
-		func(e *ircevent.Event) {
-			go c.handle(conn, e)
-		},
-	)
+	if config.Get().Modules.Corrections.Enable {
+		conn.IrcEventConnection.AddCallback(
+			"PRIVMSG",
+			func(e *ircevent.Event) {
+				go c.handle(conn, e)
+			},
+		)
+	}
 }
 
 func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {

@@ -25,18 +25,22 @@ type ClientConfig struct {
 	}
 	Modules struct {
 		Corrections struct {
+			Enable      bool
 			Separator   string
 			UserLogSize int
 		}
 		Karma struct {
+			Enable        bool
 			PlusOperator  string
 			MinusOperator string
 			Command       string
 		}
 		Quotes struct {
+			Enable  bool
 			Command string
 		}
 		Tells struct {
+			Enable  bool
 			Command string
 		}
 	}
