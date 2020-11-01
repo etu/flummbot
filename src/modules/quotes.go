@@ -23,6 +23,7 @@ func (q Quotes) RegisterCallbacks(c *irc.IrcConnection) {
 }
 
 func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
+	format := irc.GetFormat()
 	cmd := strings.Split(e.Message(), " ")[0]
 
 	if cmd == config.Get().Modules.Quotes.Command {
@@ -48,9 +49,15 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 				// highlighting of the creator when printing a quote.
 				spacedNick := quote.Nick[0:1] + "\u200B" + quote.Nick[1:]
 
-				c.IrcEventConnection.Privmsg(
+				c.IrcEventConnection.Privmsgf(
 					e.Arguments[0],
-					"Quote added by "+spacedNick+" @ "+date+": "+quote.Body,
+					"%sQuote added by %s @ %s:%s %s%s",
+					format.Color+format.Colors.LightBlue,
+					spacedNick,
+					date,
+					format.Reset,
+					format.Italics,
+					quote.Body,
 				)
 			}
 
@@ -62,9 +69,12 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 				Channel: e.Arguments[0],
 			})
 
-			c.IrcEventConnection.Privmsg(
+			c.IrcEventConnection.Privmsgf(
 				e.Arguments[0],
-				"Quote added, use "+cmd+" without params to get a random quote",
+				"Quote added, use %s%s%s without params to get a random quote",
+				format.Underline,
+				cmd,
+				format.Reset,
 			)
 		}
 	}

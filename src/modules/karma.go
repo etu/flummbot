@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
 
 	"github.com/etu/flummbot/src/config"
@@ -24,6 +24,7 @@ func (k Karma) RegisterCallbacks(c *irc.IrcConnection) {
 }
 
 func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
+	format := irc.GetFormat()
 	plusOperator := config.Get().Modules.Karma.PlusOperator
 	minusOperator := config.Get().Modules.Karma.MinusOperator
 
@@ -38,9 +39,15 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		var karma db.KarmaModel
 		db.Get().Gorm.Where(&db.KarmaModel{Item: words[1]}).First(&karma)
 
-		c.IrcEventConnection.Privmsg(
+		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
-			karma.Item+" got the current karma "+strconv.Itoa(karma.Points)+"!",
+			"%s%s%s got the current karma %s%d%s!",
+			format.Bold+format.Color+format.Colors.Magenta,
+			karma.Item,
+			format.Reset,
+			format.Bold+format.Color+format.Colors.LightCyan,
+			karma.Points,
+			format.Reset,
 		)
 
 		return
@@ -95,7 +102,15 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		// Append messages to list of messages
 		karmaReportMessage = append(
 			karmaReportMessage,
-			word+" karma changed to "+strconv.Itoa(karma.Points),
+			fmt.Sprintf(
+				"%s%s%s karma changed to %s%d%s",
+				format.Bold+format.Color+format.Colors.Magenta,
+				word,
+				format.Reset,
+				format.Bold+format.Color+format.Colors.LightCyan,
+				karma.Points,
+				format.Reset,
+			),
 		)
 	}
 

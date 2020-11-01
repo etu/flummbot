@@ -38,6 +38,7 @@ func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
 }
 
 func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
+	format := irc.GetFormat()
 	parts := strings.Split(e.Message(), " ")
 
 	if parts[0] == config.Get().Modules.Tells.Command && len(parts) > 2 {
@@ -49,14 +50,22 @@ func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 			Body:    strings.Join(parts[2:], " "),
 		})
 
-		c.IrcEventConnection.Privmsg(
+		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
-			"Alright, I'm going to tell "+parts[1]+": "+strings.Join(parts[2:], " "),
+			"%sAlright, I'm going to tell %s%s:%s %s%s",
+			format.Color+format.Colors.LightBlue,
+			format.Color+format.Colors.LightCyan+format.Bold,
+			parts[1],
+			format.Reset,
+			format.Italics,
+			strings.Join(parts[2:], " "),
 		)
 	}
 }
 
 func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
+	format := irc.GetFormat()
+
 	rows, _ := db.Get().Gorm.Model(&db.TellsModel{}).Where(&db.TellsModel{
 		Network: c.Config.Name,
 		Channel: e.Arguments[0],
@@ -75,9 +84,16 @@ func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 		// Format the timestamp
 		date := tell.CreatedAt.Format("2006-01-02 15:04:05")
 
-		c.IrcEventConnection.Privmsg(
+		c.IrcEventConnection.Privmsgf(
 			tell.Channel,
-			tell.To+": \""+tell.Body+"\" -- "+tell.From+" @ "+date,
+			"%s: '%s' %s--%s %s%s @ %s",
+			format.Bold+format.Color+format.Colors.LightCyan+tell.To+format.Reset,
+			format.Italics+tell.Body+format.Reset,
+			format.Color+format.Colors.Gray,
+			format.Reset,
+			format.Color+format.Colors.Blue,
+			tell.From,
+			date,
 		)
 
 		toDelete[tell.ID] = true

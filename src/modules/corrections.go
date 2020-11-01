@@ -25,6 +25,7 @@ func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 	var correction db.CorrectionsModel
 	prefixes := make(map[string]bool)
+	format := irc.GetFormat()
 
 	// Build a map of separator with the key as value for lookup of the separator.
 	for _, value := range config.Get().Modules.Corrections.Separators {
@@ -70,9 +71,14 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 					db.Get().Gorm.Create(&correction)
 
 					// Respond on IRC
-					conn.IrcEventConnection.Privmsg(
+					conn.IrcEventConnection.Privmsgf(
 						e.Arguments[0],
-						"What "+e.Nick+" meant to say was: "+corrected,
+						"What %s%s%s meant to say was: %s%s",
+						format.Bold,
+						e.Nick,
+						format.Reset,
+						format.Italics,
+						corrected,
 					)
 
 					break
