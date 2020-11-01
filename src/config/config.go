@@ -42,9 +42,9 @@ type ClientConfig struct {
 	}
 }
 
-func New(configFile string) ClientConfig {
-	var config ClientConfig
+var config ClientConfig
 
+func New(configFile string) ClientConfig {
 	// Read the config file
 	fileContent, err := ioutil.ReadFile(configFile)
 	if err != nil {
@@ -56,5 +56,9 @@ func New(configFile string) ClientConfig {
 		log.Fatal(fmt.Sprintf("Config error: %v", err))
 	}
 
+	return config
+}
+
+func Get() ClientConfig {
 	return config
 }

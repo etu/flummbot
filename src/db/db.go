@@ -11,22 +11,27 @@ type Db struct {
 	Gorm *gorm.DB
 }
 
-var (
-	db     Db
-	dbConn *gorm.DB
-	err    error
-)
+var db Db
 
 func New(config *config.ClientConfig) Db {
 	if db.Gorm == nil {
-		dbConn, err = gorm.Open(config.Database.Dialect, config.Database.Args)
+		conn, err := gorm.Open(config.Database.Dialect, config.Database.Args)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		db.Gorm = dbConn
+		conn.AutoMigrate(&CorrectionsModel{})
+		conn.AutoMigrate(&KarmaModel{})
+		conn.AutoMigrate(&QuotesModel{})
+		conn.AutoMigrate(&TellsModel{})
+
+		db.Gorm = conn
 	}
 
+	return db
+}
+
+func Get() Db {
 	return db
 }

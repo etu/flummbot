@@ -1,7 +1,6 @@
 package irc
 
 import (
-	"github.com/etu/flummbot/src/db"
 	"crypto/tls"
 	"fmt"
 	ircevent "github.com/thoj/go-ircevent"
@@ -26,10 +25,9 @@ type Config struct {
 type IrcConnection struct {
 	IrcEventConnection *ircevent.Connection
 	Config             *Config
-	Db                 db.Db
 }
 
-func New(config *Config, db db.Db) IrcConnection {
+func New(config *Config) IrcConnection {
 	ircEvent := ircevent.IRC(config.Nick, config.User)
 	ircEvent.Version = config.ClientVersion
 	ircEvent.Password = config.Password
@@ -39,7 +37,7 @@ func New(config *Config, db db.Db) IrcConnection {
 	}
 	ircEvent.VerboseCallbackHandler = config.Debug
 
-	ic := IrcConnection{ircEvent, config, db}
+	ic := IrcConnection{ircEvent, config}
 
 	ircEvent.AddCallback("001", ic.onWelcome)
 

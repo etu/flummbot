@@ -5,6 +5,5 @@ import (
 )
 
 type Module interface {
-	DbSetup()
 	RegisterCallbacks(*irc.IrcConnection)
 }

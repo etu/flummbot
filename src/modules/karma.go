@@ -4,26 +4,12 @@ import (
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
-	"github.com/jinzhu/gorm"
 	ircevent "github.com/thoj/go-ircevent"
 	"strconv"
 	"strings"
 )
 
-type KarmaModel struct {
-	gorm.Model
-	Item   string `gorm:"unique;not null"`
-	Points int
-}
-
-type Karma struct {
-	Config *config.ClientConfig
-	Db     *db.Db
-}
-
-func (k Karma) DbSetup() {
-	k.Db.Gorm.AutoMigrate(&KarmaModel{})
-}
+type Karma struct{}
 
 func (k Karma) RegisterCallbacks(c *irc.IrcConnection) {
 	c.IrcEventConnection.AddCallback(
@@ -35,19 +21,19 @@ func (k Karma) RegisterCallbacks(c *irc.IrcConnection) {
 }
 
 func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
-	plusOperator := k.Config.Modules.Karma.PlusOperator
-	minusOperator := k.Config.Modules.Karma.MinusOperator
+	plusOperator := config.Get().Modules.Karma.PlusOperator
+	minusOperator := config.Get().Modules.Karma.MinusOperator
 
 	words := strings.Split(e.Message(), " ")
 	cmd := words[0]
 
-	if cmd == k.Config.Modules.Karma.Command && len(words) > 1 {
+	if cmd == config.Get().Modules.Karma.Command && len(words) > 1 {
 		if words[1] == "" {
 			return
 		}
 
-		var karma KarmaModel
-		k.Db.Gorm.Where(&KarmaModel{Item: words[1]}).First(&karma)
+		var karma db.KarmaModel
+		db.Get().Gorm.Where(&db.KarmaModel{Item: words[1]}).First(&karma)
 
 		c.IrcEventConnection.Privmsg(
 			e.Arguments[0],
@@ -86,8 +72,8 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	karmaReportMessage := make([]string, 0)
 
 	for word, points := range wordDiffs {
-		var karma KarmaModel
-		k.Db.Gorm.Where(&KarmaModel{Item: word}).First(&karma)
+		var karma db.KarmaModel
+		db.Get().Gorm.Where(&db.KarmaModel{Item: word}).First(&karma)
 
 		// Calculate new total points
 		karma.Points = karma.Points + points
@@ -95,12 +81,12 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		// Determine if we need to insert or update the row
 		if karma.ID == 0 {
 			// Insert item
-			k.Db.Gorm.Create(&KarmaModel{
+			db.Get().Gorm.Create(&db.KarmaModel{
 				Item:   word,
 				Points: karma.Points,
 			})
 		} else {
-			k.Db.Gorm.Model(&karma).UpdateColumns(karma)
+			db.Get().Gorm.Model(&karma).UpdateColumns(karma)
 		}
 
 		// Append messages to list of messages

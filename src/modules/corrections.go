@@ -4,27 +4,11 @@ import (
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
-	"github.com/jinzhu/gorm"
 	ircevent "github.com/thoj/go-ircevent"
 	"strings"
 )
 
-type CorrectionsModel struct {
-	gorm.Model
-	Nick    string `gorm:"size:32"`
-	Body    string `gorm:"size:512"`
-	Network string `gorm:"size:64"`
-	Channel string `gorm:"size:64"`
-}
-
-type Corrections struct {
-	Config *config.ClientConfig
-	Db     *db.Db
-}
-
-func (c Corrections) DbSetup() {
-	c.Db.Gorm.AutoMigrate(&CorrectionsModel{})
-}
+type Corrections struct{}
 
 func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 	conn.IrcEventConnection.AddCallback(
@@ -36,15 +20,15 @@ func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 }
 
 func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
-	var correction CorrectionsModel
+	var correction db.CorrectionsModel
 
 	msg := strings.Trim(e.Message(), " ")
-	separator := c.Config.Modules.Corrections.Separator
+	separator := config.Get().Modules.Corrections.Separator
 	prefix := "s" + separator
 
 	// Check so we don't go out of bounds and look for the prefix
 	if len(msg) > 1 && msg[0:2] == prefix {
-		rows, err := c.Db.Gorm.Model(&CorrectionsModel{}).Where(&CorrectionsModel{
+		rows, err := db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
 			Nick:    e.Nick,
 			Network: conn.Config.Name,
 			Channel: e.Arguments[0],
@@ -59,7 +43,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 		if len(subs) > 2 {
 			for rows.Next() {
-				c.Db.Gorm.ScanRows(rows, &correction)
+				db.Get().Gorm.ScanRows(rows, &correction)
 
 				if strings.Contains(correction.Body, subs[1]) {
 					// Correct string
@@ -68,7 +52,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 					rows.Close()
 
 					// Store in model
-					correction = CorrectionsModel{
+					correction = db.CorrectionsModel{
 						Nick:    e.Nick,
 						Body:    corrected,
 						Network: conn.Config.Name,
@@ -76,7 +60,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 					}
 
 					// Save the corrected one to the database as a new entry
-					c.Db.Gorm.Create(&correction)
+					db.Get().Gorm.Create(&correction)
 
 					// Respond on IRC
 					conn.IrcEventConnection.Privmsg(
@@ -90,22 +74,22 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 	} else { // Record messages for this user
-		correction = CorrectionsModel{
+		correction = db.CorrectionsModel{
 			Nick:    e.Nick,
 			Body:    msg,
 			Network: conn.Config.Name,
 			Channel: e.Arguments[0],
 		}
 
-		c.Db.Gorm.Create(&correction)
+		db.Get().Gorm.Create(&correction)
 	}
 
 	// When everything is done, let's go through and clean up so we don't store too
 	// many messages for the user
-	var userCorrections []CorrectionsModel
+	var userCorrections []db.CorrectionsModel
 
 	// Select all items
-	rows, _ := c.Db.Gorm.Model(&CorrectionsModel{}).Where(&CorrectionsModel{
+	rows, _ := db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
 		Nick:    e.Nick,
 		Network: conn.Config.Name,
 		Channel: e.Arguments[0],
@@ -113,18 +97,18 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 	// Aggregate all items in a slice
 	for rows.Next() {
-		c.Db.Gorm.ScanRows(rows, &correction)
+		db.Get().Gorm.ScanRows(rows, &correction)
 
 		userCorrections = append(userCorrections, correction)
 	}
 
 	// Read user log size from config
-	userLogSize := c.Config.Modules.Corrections.UserLogSize
+	userLogSize := config.Get().Modules.Corrections.UserLogSize
 
 	if len(userCorrections) > userLogSize {
 		// Remove all but the configured last items in the correction log
 		for _, correction := range userCorrections[:len(userCorrections)-userLogSize] {
-			c.Db.Gorm.Unscoped().Delete(correction)
+			db.Get().Gorm.Unscoped().Delete(correction)
 		}
 	}
 }

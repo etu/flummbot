@@ -18,20 +18,15 @@ func main() {
 	config := config.New(cmdArguments.ConfigFile)
 
 	// Set up database
-	database := db.New(&config)
-	defer database.Gorm.Close()
+	conn := db.New(&config)
+	defer conn.Gorm.Close()
 
 	// Set up modules
 	modules := [...]modules.Module{
-		modules.Corrections{Config: &config, Db: &database},
-		modules.Karma{Config: &config, Db: &database},
-		modules.Quotes{Config: &config, Db: &database},
-		modules.Tells{Config: &config, Db: &database},
-	}
-
-	// Set up databases
-	for _, module := range modules {
-		module.DbSetup()
+		modules.Corrections{},
+		modules.Karma{},
+		modules.Quotes{},
+		modules.Tells{},
 	}
 
 	// Set up connections per network connection defined
@@ -50,7 +45,7 @@ func main() {
 			Debug:            cmdArguments.Debug,
 		}
 
-		conn := irc.New(&config, database)
+		conn := irc.New(&config)
 
 		// Register callbacks for modules
 		for _, module := range modules {

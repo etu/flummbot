@@ -4,27 +4,11 @@ import (
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
-	"github.com/jinzhu/gorm"
 	ircevent "github.com/thoj/go-ircevent"
 	"strings"
 )
 
-type QuotesModel struct {
-	gorm.Model
-	Nick    string `gorm:"size:32"`
-	Body    string `gorm:"size:512"`
-	Network string `gorm:"size:64"`
-	Channel string `gorm:"size:64"`
-}
-
-type Quotes struct {
-	Config *config.ClientConfig
-	Db     *db.Db
-}
-
-func (q Quotes) DbSetup() {
-	q.Db.Gorm.AutoMigrate(&QuotesModel{})
-}
+type Quotes struct{}
 
 func (q Quotes) RegisterCallbacks(c *irc.IrcConnection) {
 	c.IrcEventConnection.AddCallback(
@@ -38,15 +22,15 @@ func (q Quotes) RegisterCallbacks(c *irc.IrcConnection) {
 func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	cmd := strings.Split(e.Message(), " ")[0]
 
-	if cmd == q.Config.Modules.Quotes.Command {
+	if cmd == config.Get().Modules.Quotes.Command {
 		msg := strings.Replace(e.Message(), cmd, "", 1)
 		msg = strings.Trim(msg, " ")
 
 		if len(msg) == 0 { // No message given: Fetch random quote
-			var quote QuotesModel
+			var quote db.QuotesModel
 
 			// Select random quote from the database
-			q.Db.Gorm.Where(&QuotesModel{
+			db.Get().Gorm.Where(&db.QuotesModel{
 				Network: c.Config.Name,
 				Channel: e.Arguments[0],
 			}).Order("RANDOM()").First(&quote)
@@ -68,7 +52,7 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 			}
 
 		} else { // Add quote to database
-			q.Db.Gorm.Create(&QuotesModel{
+			db.Get().Gorm.Create(&db.QuotesModel{
 				Nick:    e.Nick,
 				Body:    msg,
 				Network: c.Config.Name,

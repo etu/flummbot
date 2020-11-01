@@ -4,28 +4,11 @@ import (
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
-	"github.com/jinzhu/gorm"
 	ircevent "github.com/thoj/go-ircevent"
 	"strings"
 )
 
-type TellsModel struct {
-	gorm.Model
-	From    string `gorm:"size:32"`
-	To      string `gorm:"size:32"`
-	Network string `gorm:"size:64"`
-	Channel string `gorm:"size:64"`
-	Body    string `gorm:"size:512"`
-}
-
-type Tells struct {
-	Config *config.ClientConfig
-	Db     *db.Db
-}
-
-func (t Tells) DbSetup() {
-	t.Db.Gorm.AutoMigrate(&TellsModel{})
-}
+type Tells struct{}
 
 func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
 	c.IrcEventConnection.AddCallback(
@@ -54,8 +37,8 @@ func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
 func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 	parts := strings.Split(e.Message(), " ")
 
-	if parts[0] == t.Config.Modules.Tells.Command && len(parts) > 2 {
-		t.Db.Gorm.Create(&TellsModel{
+	if parts[0] == config.Get().Modules.Tells.Command && len(parts) > 2 {
+		db.Get().Gorm.Create(&db.TellsModel{
 			From:    e.Nick,
 			To:      strings.ToLower(parts[1]),
 			Network: c.Config.Name,
@@ -71,7 +54,7 @@ func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 }
 
 func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
-	rows, _ := t.Db.Gorm.Model(&TellsModel{}).Where(&TellsModel{
+	rows, _ := db.Get().Gorm.Model(&db.TellsModel{}).Where(&db.TellsModel{
 		Network: c.Config.Name,
 		Channel: e.Arguments[0],
 		To:      strings.ToLower(e.Nick),
@@ -82,9 +65,9 @@ func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 	toDelete := make(map[uint]bool)
 
 	for rows.Next() {
-		var tell TellsModel
+		var tell db.TellsModel
 
-		t.Db.Gorm.ScanRows(rows, &tell)
+		db.Get().Gorm.ScanRows(rows, &tell)
 
 		// Format the timestamp
 		date := tell.CreatedAt.Format("2006-01-02 15:04:05")
@@ -101,6 +84,6 @@ func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 
 	// Loop trough the map with ids to remove
 	for id := range toDelete {
-		t.Db.Gorm.Unscoped().Where("id = ?", id).Delete(&TellsModel{})
+		db.Get().Gorm.Unscoped().Where("id = ?", id).Delete(&db.TellsModel{})
 	}
 }
