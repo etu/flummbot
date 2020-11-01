@@ -24,13 +24,17 @@ func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 
 func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 	var correction db.CorrectionsModel
+	prefixes := make(map[string]bool)
+
+	// Build a map of separator with the key as value for lookup of the separator.
+	for _, value := range config.Get().Modules.Corrections.Separators {
+		prefixes["s"+value] = true
+	}
 
 	msg := strings.Trim(e.Message(), " ")
-	separator := config.Get().Modules.Corrections.Separator
-	prefix := "s" + separator
 
 	// Check so we don't go out of bounds and look for the prefix
-	if len(msg) > 1 && msg[0:2] == prefix {
+	if len(msg) > 1 && prefixes[msg[0:2]] == true {
 		rows, err := db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
 			Nick:    e.Nick,
 			Network: conn.Config.Name,
@@ -42,7 +46,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 		// Split replacement message
-		subs := strings.Split(e.Message(), separator)
+		subs := strings.Split(e.Message(), msg[1:2])
 
 		if len(subs) > 2 {
 			for rows.Next() {

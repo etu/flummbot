@@ -26,7 +26,7 @@ type ClientConfig struct {
 	Modules struct {
 		Corrections struct {
 			Enable      bool
-			Separator   string
+			Separators  []string
 			UserLogSize int
 		}
 		Karma struct {
