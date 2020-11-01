@@ -1,7 +1,8 @@
 package main // import "github.com/etu/flummbot"
 
 import (
-	"github.com/etu/flummbot/src/args"
+	"flag"
+
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
 	"github.com/etu/flummbot/src/irc"
@@ -9,19 +10,33 @@ import (
 )
 
 func main() {
+	var configFile string
+	var debug bool
+
 	connections := make(map[string]irc.IrcConnection)
 	chQuitted := make(chan string)
 
-	cmdArguments := args.Parse()
+	//
+	// Parse command line flags
+	//
+	flag.BoolVar(&debug, "debug", false, "Enable or disable debug output")
+	flag.StringVar(&configFile, "config", "flummbot.toml", "Specify path to the config file")
+	flag.Parse()
 
+	//
 	// Parse config file
-	config := config.New(cmdArguments.ConfigFile)
+	//
+	config := config.New(configFile)
 
+	//
 	// Set up database
+	//
 	conn := db.New(&config)
 	defer conn.Gorm.Close()
 
+	//
 	// Set up modules
+	//
 	modules := [...]modules.Module{
 		modules.Corrections{},
 		modules.Karma{},
@@ -29,7 +44,9 @@ func main() {
 		modules.Tells{},
 	}
 
+	//
 	// Set up connections per network connection defined
+	//
 	for _, network := range config.Connections {
 		config := irc.Config{
 			Name:             network.Name,
@@ -42,7 +59,7 @@ func main() {
 			UseTLS:           network.UseTLS,
 			ClientVersion:    "flummbot 2.0.0-alpha1",
 			NickservIdentify: network.NickservIdentify,
-			Debug:            cmdArguments.Debug,
+			Debug:            debug,
 		}
 
 		conn := irc.New(&config)
@@ -59,7 +76,9 @@ func main() {
 		connections[network.Name] = conn
 	}
 
+	//
 	// While we have active connections
+	//
 	for len(connections) > 0 {
 		select {
 		case quitted := <-chQuitted:
