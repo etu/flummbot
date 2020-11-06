@@ -1,7 +1,7 @@
-with (import <nixpkgs> {});
+{ pkgs ? (import <nixpkgs> {}) }:
 
-mkShell {
-  buildInputs = [
+pkgs.mkShell {
+  buildInputs = with pkgs; [
     gnumake
     go
     gopls
