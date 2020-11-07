@@ -19,6 +19,12 @@ func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 				go c.handle(conn, e)
 			},
 		)
+		conn.IrcEventConnection.AddCallback(
+			"CTCP_ACTION",
+			func(e *ircevent.Event) {
+				go c.handle(conn, e)
+			},
+		)
 	}
 }
 
@@ -62,6 +68,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 					// Store in model
 					correction = db.CorrectionsModel{
 						Nick:    e.Nick,
+						Type:    correction.Type,
 						Body:    corrected,
 						Network: conn.Config.Name,
 						Channel: e.Arguments[0],
@@ -70,15 +77,19 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 					// Save the corrected one to the database as a new entry
 					db.Get().Gorm.Create(&correction)
 
+					// Have a different prefix before message if it's an ACTION message
+					prefix := ""
+					if correction.Type == "CTCP_ACTION" {
+						prefix = "* " + format.Bold + e.Nick + format.Reset + ": "
+					}
+
 					// Respond on IRC
 					conn.IrcEventConnection.Privmsgf(
 						e.Arguments[0],
-						"What %s%s%s meant to say was: %s%s",
-						format.Bold,
-						e.Nick,
-						format.Reset,
-						format.Italics,
-						corrected,
+						"What %s meant to say was: %s%s",
+						format.Bold+e.Nick+format.Reset,
+						prefix,
+						format.Italics+corrected,
 					)
 
 					break
@@ -89,6 +100,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 	} else { // Record messages for this user
 		correction = db.CorrectionsModel{
 			Nick:    e.Nick,
+			Type:    e.Code,
 			Body:    msg,
 			Network: conn.Config.Name,
 			Channel: e.Arguments[0],

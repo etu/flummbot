@@ -5,6 +5,7 @@ import "github.com/jinzhu/gorm"
 type CorrectionsModel struct {
 	gorm.Model
 	Nick    string `gorm:"size:32"`
+	Type    string `gorm:"size:11"`
 	Body    string `gorm:"size:512"`
 	Network string `gorm:"size:64"`
 	Channel string `gorm:"size:64"`
