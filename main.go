@@ -57,7 +57,7 @@ func main() {
 			Nick:             network.Nick,
 			Password:         network.Password,
 			UseTLS:           network.UseTLS,
-			ClientVersion:    "flummbot 2.0.0-alpha1",
+			ClientVersion:    "flummbot %version%",
 			NickservIdentify: network.NickservIdentify,
 			Debug:            debug,
 		}

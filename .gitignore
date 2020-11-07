@@ -1,3 +1,6 @@
 flummbot
 flummbot.db
 flummbot.toml
+
+# Ignore nix outputs
+result*
