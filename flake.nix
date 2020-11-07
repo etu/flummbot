@@ -16,7 +16,7 @@
           substituteInPlace main.go --replace "%version%" "${version}"
         '';
 
-        vendorSha256 = "sha256-FjvTVVPO7M74dcqJCP6eaPilhLAA2lMFEUyDtoBGgzI=";
+        vendorSha256 = "sha256-VIUm+m43fpFhflXU22hUD9IJINYZM6VWq7dmSiBsBGc=";
       };
     };
 
