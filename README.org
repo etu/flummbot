@@ -9,7 +9,6 @@ Simple IRC-bot I wrote in golang for my irc-channel.
     something
   - Save quotes with the command =!quote <message>=
   - Tell random quote with the command =!quote=
-  - Join channels when requested by being invited. Also got a Whitelist.
 
 ** Configure the bot
 Copy the sample config =flummbot.sample.toml= to =flummbot.toml= and look
@@ -29,15 +28,7 @@ connect.
 *** Quotes
 =command= specifies command used in the =!quote= module.
 
-*** Invite
-=message= specifies message the bot tells in a channel it got invited to. We
-also use =Sprintf= to inject one variable into the string which contains the
-nick that invited the bot to the channel. Specify it with =%s= in this
-variable.
-
-=whitelist= is a list with nicks allowed to invite the bot to other channels.
-
-*** Sweet sweet Karmas
+*** Karmas
 =command= specifies command used in the =!karma= module.
 
 It also listenes words that ends with plusOperator and minusOperator (++ or
