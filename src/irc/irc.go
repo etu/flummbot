@@ -60,7 +60,7 @@ func (i *IrcConnection) Run(chQuitted chan string) {
 func (i *IrcConnection) onWelcome(e *ircevent.Event) {
 	// Identify to nickserv before joining channels
 	if len(i.Config.NickservIdentify) > 0 {
-		log.Println(fmt.Sprintf("Sending: '%s' to nickserv", i.Config.NickservIdentify))
+		log.Println("Sending: identify string to nickserv")
 		i.IrcEventConnection.Privmsg("nickserv", i.Config.NickservIdentify)
 		time.Sleep(time.Second)
 	}
