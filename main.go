@@ -39,6 +39,7 @@ func main() {
 	//
 	modules := [...]modules.Module{
 		modules.Corrections{},
+		modules.Extras{},
 		modules.Karma{},
 		modules.Quotes{},
 		modules.Tells{},

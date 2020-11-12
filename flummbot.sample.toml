@@ -30,6 +30,10 @@ Enable = true
 Separators = [ "/", "#", "$", ".", "," ]
 UserLogSize = 3
 
+# Extras module with some small extra random things
+[Modules.Extras]
+Enable = true
+
 # Enable the karma module
 [Modules.Karma]
 Enable = true

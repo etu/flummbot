@@ -29,6 +29,9 @@ type ClientConfig struct {
 			Separators  []string
 			UserLogSize int
 		}
+		Extras struct {
+			Enable bool
+		}
 		Karma struct {
 			Enable        bool
 			PlusOperator  string
