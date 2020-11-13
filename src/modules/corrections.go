@@ -29,6 +29,56 @@ func (c Corrections) RegisterCallbacks(conn *irc.IrcConnection) {
 }
 
 func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
+	var rows []db.CorrectionsModel
+	var correction db.CorrectionsModel
+
+	msg := strings.Trim(e.Message(), " ")
+
+	// Fetch database entries to consider
+	db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
+		Nick:    e.Nick,
+		Network: conn.Config.Name,
+		Channel: e.Arguments[0],
+	}).Order("ID DESC").Find(&rows)
+
+	// Record messages for this user if it wasn't a correction
+	if c.processCorrections(msg, rows, conn, e) == false {
+		correction = db.CorrectionsModel{
+			Nick:    e.Nick,
+			Type:    e.Code,
+			Body:    msg,
+			Network: conn.Config.Name,
+			Channel: e.Arguments[0],
+		}
+
+		db.Get().Gorm.Create(&correction)
+
+	}
+
+	// Select all items
+	db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
+		Nick:    e.Nick,
+		Network: conn.Config.Name,
+		Channel: e.Arguments[0],
+	}).Find(&rows)
+
+	// Read user log size from config
+	userLogSize := config.Get().Modules.Corrections.UserLogSize
+
+	if len(rows) > userLogSize {
+		// Remove all but the configured last items in the correction log
+		for _, row := range rows[:len(rows)-userLogSize] {
+			db.Get().Gorm.Unscoped().Delete(row)
+		}
+	}
+}
+
+func (c Corrections) processCorrections(
+	msg string,
+	rows []db.CorrectionsModel,
+	conn *irc.IrcConnection,
+	e *ircevent.Event,
+) bool {
 	var correction db.CorrectionsModel
 	prefixes := make(map[string]bool)
 	format := irc.GetFormat()
@@ -38,32 +88,23 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 		prefixes["s"+value] = true
 	}
 
-	msg := strings.Trim(e.Message(), " ")
+	for _, row := range rows {
+		for prefix := range prefixes {
+			if len(msg) > 1 && strings.Index(msg, prefix) == 0 {
+				// Split replaement message
+				subs := strings.SplitN(msg, prefix[1:], 3)
 
-	// Check so we don't go out of bounds and look for the prefix
-	if len(msg) > 1 && prefixes[msg[0:2]] == true {
-		rows, err := db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
-			Nick:    e.Nick,
-			Network: conn.Config.Name,
-			Channel: e.Arguments[0],
-		}).Order("ID DESC").Rows()
+				// If we have a replacement match
+				if len(subs) == 3 && strings.Contains(row.Body, subs[1]) {
+					trailSeparatorIndex := strings.LastIndex(subs[2], prefix[1:])
+					// Find out if we have a trailing separator
+					if len(subs[2])-len(prefix[1:]) == trailSeparatorIndex {
+						// And cut it off the end
+						subs[2] = subs[2][0:trailSeparatorIndex]
+					}
 
-		if err != nil {
-			panic(err)
-		}
-
-		// Split replacement message
-		subs := strings.Split(e.Message(), msg[1:2])
-
-		if len(subs) > 2 {
-			for rows.Next() {
-				db.Get().Gorm.ScanRows(rows, &correction)
-
-				if strings.Contains(correction.Body, subs[1]) {
 					// Correct string
-					corrected := strings.ReplaceAll(correction.Body, subs[1], subs[2])
-
-					rows.Close()
+					corrected := strings.ReplaceAll(row.Body, subs[1], subs[2])
 
 					// Store in model
 					correction = db.CorrectionsModel{
@@ -79,7 +120,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 					// Have a different prefix before message if it's an ACTION message
 					prefix := ""
-					if correction.Type == "CTCP_ACTION" {
+					if row.Type == "CTCP_ACTION" {
 						prefix = "* " + format.Bold + e.Nick + format.Reset + ": "
 					}
 
@@ -92,48 +133,11 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 						format.Italics+corrected,
 					)
 
-					break
+					return true
 				}
 			}
 		}
-
-	} else { // Record messages for this user
-		correction = db.CorrectionsModel{
-			Nick:    e.Nick,
-			Type:    e.Code,
-			Body:    msg,
-			Network: conn.Config.Name,
-			Channel: e.Arguments[0],
-		}
-
-		db.Get().Gorm.Create(&correction)
 	}
 
-	// When everything is done, let's go through and clean up so we don't store too
-	// many messages for the user
-	var userCorrections []db.CorrectionsModel
-
-	// Select all items
-	rows, _ := db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
-		Nick:    e.Nick,
-		Network: conn.Config.Name,
-		Channel: e.Arguments[0],
-	}).Rows()
-
-	// Aggregate all items in a slice
-	for rows.Next() {
-		db.Get().Gorm.ScanRows(rows, &correction)
-
-		userCorrections = append(userCorrections, correction)
-	}
-
-	// Read user log size from config
-	userLogSize := config.Get().Modules.Corrections.UserLogSize
-
-	if len(userCorrections) > userLogSize {
-		// Remove all but the configured last items in the correction log
-		for _, correction := range userCorrections[:len(userCorrections)-userLogSize] {
-			db.Get().Gorm.Unscoped().Delete(correction)
-		}
-	}
+	return false
 }
