@@ -36,7 +36,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 	// Fetch database entries to consider
 	db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
-		Nick:    e.Nick,
+		Nick:    strings.ToLower(e.Nick),
 		Network: conn.Config.Name,
 		Channel: e.Arguments[0],
 	}).Order("ID DESC").Find(&rows)
@@ -44,7 +44,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 	// Record messages for this user if it wasn't a correction
 	if c.processCorrections(msg, rows, conn, e) == false {
 		correction = db.CorrectionsModel{
-			Nick:    e.Nick,
+			Nick:    strings.ToLower(e.Nick),
 			Type:    e.Code,
 			Body:    msg,
 			Network: conn.Config.Name,
@@ -57,7 +57,7 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 
 	// Select all items
 	db.Get().Gorm.Model(&db.CorrectionsModel{}).Where(&db.CorrectionsModel{
-		Nick:    e.Nick,
+		Nick:    strings.ToLower(e.Nick),
 		Network: conn.Config.Name,
 		Channel: e.Arguments[0],
 	}).Find(&rows)
@@ -108,7 +108,7 @@ func (c Corrections) processCorrections(
 
 					// Store in model
 					correction = db.CorrectionsModel{
-						Nick:    e.Nick,
+						Nick:    strings.ToLower(e.Nick),
 						Type:    correction.Type,
 						Body:    corrected,
 						Network: conn.Config.Name,
