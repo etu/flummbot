@@ -98,7 +98,7 @@ func (c Corrections) processCorrections(
 				if len(subs) == 3 && strings.Contains(row.Body, subs[1]) {
 					trailSeparatorIndex := strings.LastIndex(subs[2], prefix[1:])
 					// Find out if we have a trailing separator
-					if len(subs[2])-len(prefix[1:]) == trailSeparatorIndex {
+					if trailSeparatorIndex > 0 && len(subs[2])-len(prefix[1:]) == trailSeparatorIndex {
 						// And cut it off the end
 						subs[2] = subs[2][0:trailSeparatorIndex]
 					}
