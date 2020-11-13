@@ -2,6 +2,10 @@ package main // import "github.com/etu/flummbot"
 
 import (
 	"flag"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/etu/flummbot/src/config"
 	"github.com/etu/flummbot/src/db"
@@ -26,13 +30,26 @@ func main() {
 	//
 	// Parse config file
 	//
-	config := config.New(configFile)
+	parsedConfig := config.New(configFile)
 
 	//
 	// Set up database
 	//
-	conn := db.New(&config)
+	conn := db.New(&parsedConfig)
 	defer conn.Gorm.Close()
+
+	//
+	// Listen to SIGUSR1 to reload the config
+	//
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc, syscall.SIGUSR1)
+	go func() {
+		for {
+			<-sigc
+			log.Println("Recieved SIGUSR1, reloading config file")
+			config.New(configFile)
+		}
+	}()
 
 	//
 	// Set up modules
@@ -48,7 +65,7 @@ func main() {
 	//
 	// Set up connections per network connection defined
 	//
-	for _, network := range config.Connections {
+	for _, network := range parsedConfig.Connections {
 		config := irc.Config{
 			Name:             network.Name,
 			Server:           network.Server,

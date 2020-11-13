@@ -14,6 +14,16 @@ Simple IRC-bot I wrote in golang for my irc-channel.
 Copy the sample config =flummbot.sample.toml= to =flummbot.toml= and look
 through the following sections.
 
+Sending =SIGUSR1= to a running process will reload the configuration file,
+this can be used to change certain settings without restarting the process.
+
+The types of settings that works are settings that aren't related to:
+ - Connections, joining channels, etc
+ - Enable/Disable modules
+
+But it does work for changing things like, which command is used for certain
+modules, separators used for corrections etc.
+
 *** Connection
 Change the values of =channel=, =nick=, =server=, =tls= and =message=. You
 can also specify =nickservidentify= to set a message to send to NickServ on
