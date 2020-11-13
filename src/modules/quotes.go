@@ -24,13 +24,10 @@ func (q Quotes) RegisterCallbacks(c *irc.IrcConnection) {
 
 func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	format := irc.GetFormat()
-	cmd := strings.Split(e.Message(), " ")[0]
+	parts := strings.SplitN(e.Message(), " ", 2)
 
-	if cmd == config.Get().Modules.Quotes.Command {
-		msg := strings.Replace(e.Message(), cmd, "", 1)
-		msg = strings.Trim(msg, " ")
-
-		if len(msg) == 0 { // No message given: Fetch random quote
+	if parts[0] == config.Get().Modules.Quotes.Command {
+		if len(parts) < 2 { // No message given: Fetch random quote
 			var quote db.QuotesModel
 
 			// Select random quote from the database
@@ -62,6 +59,8 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 			}
 
 		} else { // Add quote to database
+			msg := strings.Trim(parts[1], " ")
+
 			db.Get().Gorm.Create(&db.QuotesModel{
 				Nick:    e.Nick,
 				Body:    msg,
@@ -73,7 +72,7 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 				e.Arguments[0],
 				"Quote added, use %s%s%s without params to get a random quote",
 				format.Underline,
-				cmd,
+				parts[0],
 				format.Reset,
 			)
 		}
