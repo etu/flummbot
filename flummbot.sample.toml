@@ -27,12 +27,16 @@ Args = "flummbot.db"
 # Correction module to allow users doing "s/foo/bar" style string replacement of previous messages
 [Modules.Corrections]
 Enable = true
-Separators = [ "/", "#", "$", ".", "," ]
+Separators = [ "/", "#", "$", ".", ",", "🥒", "🍆", "🥕", "🍑", "🥦", "🍌" ]
+Message = "What %s meant to write was: %s" # Has to contain two %s for printf
 UserLogSize = 3
 
 # Extras module with some small extra random things
 [Modules.Extras]
 Enable = true
+CountdownCommand = "!countdown"
+CountdownMessageN = "Countdown: %s" # Has to contain one %s for the printf
+CountdownMessage0 = "Countdown: %s!!11!oneone! %s is happening!" # Has to contain two %s for the printf
 
 # Enable the karma module
 [Modules.Karma]
@@ -40,14 +44,19 @@ Enable = true
 PlusOperator = "++"
 MinusOperator = "--"
 Command = "!karma"
+ChangeMessage = "%s karma changed to %s" # Has to contain two %s for the printf
+ReportMessage = "%s got the current karma %s!" # Has to contain two %s for the printf
 
 # Enable the quotes module to store quotes
 [Modules.Quotes]
 Enable = true
 Command = "!quote"
-
+AddMessage = "Quote added, use %s without params to get a random quote" # Has to contain one %s for the printf
+PrintMessage = "Quote added by %s @ %s: %s" # Has to contain three %s for the printf
 
 # Enable Tolls module to relay messages
 [Modules.Tells]
 Enable = true
 Command = "!tell"
+AddMessage = "Alright, I'm going to tell %s: %s" # Has to contain two %s for the printf
+PrintMessage = "%s: '%s' -- %s @ %s" # Has to contain four %s for the printf

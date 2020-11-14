@@ -27,24 +27,34 @@ type ClientConfig struct {
 		Corrections struct {
 			Enable      bool
 			Separators  []string
+			Message     string
 			UserLogSize int
 		}
 		Extras struct {
-			Enable bool
+			Enable            bool
+			CountdownCommand  string
+			CountdownMessageN string
+			CountdownMessage0 string
 		}
 		Karma struct {
 			Enable        bool
 			PlusOperator  string
 			MinusOperator string
 			Command       string
+			ChangeMessage string
+			ReportMessage string
 		}
 		Quotes struct {
-			Enable  bool
-			Command string
+			Enable       bool
+			Command      string
+			AddMessage   string
+			PrintMessage string
 		}
 		Tells struct {
-			Enable  bool
-			Command string
+			Enable       bool
+			Command      string
+			AddMessage   string
+			PrintMessage string
 		}
 	}
 }

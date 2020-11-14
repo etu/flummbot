@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -18,17 +19,15 @@ func (_ Extras) RegisterCallbacks(conn *irc.IrcConnection) {
 			func(e *ircevent.Event) {
 				words := strings.SplitN(e.Message(), " ", 2)
 
-				if len(words) > 1 && words[0] == "!countdown" {
+				if len(words) > 1 && words[0] == config.Get().Modules.Extras.CountdownCommand {
 					go func(conn *irc.IrcConnection, channel string, text string) {
 						format := irc.GetFormat()
 
 						for i := 3; i > 0; i-- {
 							conn.IrcEventConnection.Privmsgf(
 								channel,
-								"%sCountdown:%s %d",
-								format.Bold,
-								format.Reset,
-								i,
+								format.Bold+config.Get().Modules.Extras.CountdownMessageN,
+								fmt.Sprintf("%s%d", format.Reset, i),
 							)
 
 							time.Sleep(time.Second)
@@ -36,10 +35,9 @@ func (_ Extras) RegisterCallbacks(conn *irc.IrcConnection) {
 
 						conn.IrcEventConnection.Privmsgf(
 							channel,
-							"%sCountdown:%s 0!!11!one! %s is happening!",
-							format.Bold,
-							format.Reset,
-							format.Bold+format.Color+format.Colors.Magenta+text+format.Reset,
+							format.Bold+config.Get().Modules.Extras.CountdownMessage0,
+							fmt.Sprintf("%s%d", format.Reset, 0),
+							format.Bold+text+format.Reset,
 						)
 					}(conn, e.Arguments[0], words[1])
 				}

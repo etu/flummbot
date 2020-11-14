@@ -39,26 +39,22 @@ func (t Tells) RegisterCallbacks(c *irc.IrcConnection) {
 
 func (t Tells) register(c *irc.IrcConnection, e *ircevent.Event) {
 	format := irc.GetFormat()
-	parts := strings.Split(e.Message(), " ")
+	parts := strings.SplitN(e.Message(), " ", 3)
 
-	if parts[0] == config.Get().Modules.Tells.Command && len(parts) > 2 {
+	if parts[0] == config.Get().Modules.Tells.Command && len(parts) == 3 {
 		db.Get().Gorm.Create(&db.TellsModel{
 			From:    e.Nick,
 			To:      strings.ToLower(parts[1]),
 			Network: c.Config.Name,
 			Channel: e.Arguments[0],
-			Body:    strings.Join(parts[2:], " "),
+			Body:    parts[2],
 		})
 
 		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
-			"%sAlright, I'm going to tell %s%s:%s %s%s",
-			format.Color+format.Colors.LightBlue,
-			format.Color+format.Colors.LightCyan+format.Bold,
-			parts[1],
-			format.Reset,
-			format.Italics,
-			strings.Join(parts[2:], " "),
+			config.Get().Modules.Tells.AddMessage,
+			format.Bold+parts[1]+format.Reset,
+			format.Italics+parts[2],
 		)
 	}
 }
@@ -86,14 +82,11 @@ func (t Tells) deliver(c *irc.IrcConnection, e *ircevent.Event) {
 
 		c.IrcEventConnection.Privmsgf(
 			tell.Channel,
-			"%s: '%s' %s--%s %s%s @ %s",
-			format.Bold+format.Color+format.Colors.LightCyan+tell.To+format.Reset,
+			config.Get().Modules.Tells.PrintMessage,
+			format.Bold+tell.To+format.Reset,
 			format.Italics+tell.Body+format.Reset,
-			format.Color+format.Colors.Gray,
-			format.Reset,
-			format.Color+format.Colors.Blue,
-			tell.From,
-			date,
+			format.Bold+tell.From+format.Reset,
+			format.Bold+date+format.Reset,
 		)
 
 		toDelete[tell.ID] = true

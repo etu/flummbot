@@ -48,13 +48,10 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 
 				c.IrcEventConnection.Privmsgf(
 					e.Arguments[0],
-					"%sQuote added by %s @ %s:%s %s%s",
-					format.Color+format.Colors.LightBlue,
-					spacedNick,
-					date,
-					format.Reset,
-					format.Italics,
-					quote.Body,
+					config.Get().Modules.Quotes.PrintMessage,
+					format.Bold+spacedNick+format.Reset,
+					format.Bold+date+format.Reset,
+					format.Italics+quote.Body,
 				)
 			}
 
@@ -70,10 +67,8 @@ func (q Quotes) handle(c *irc.IrcConnection, e *ircevent.Event) {
 
 			c.IrcEventConnection.Privmsgf(
 				e.Arguments[0],
-				"Quote added, use %s%s%s without params to get a random quote",
-				format.Underline,
-				parts[0],
-				format.Reset,
+				config.Get().Modules.Quotes.AddMessage,
+				format.Bold+parts[0]+format.Reset,
 			)
 		}
 	}

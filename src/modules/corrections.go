@@ -127,10 +127,9 @@ func (c Corrections) processCorrections(
 					// Respond on IRC
 					conn.IrcEventConnection.Privmsgf(
 						e.Arguments[0],
-						"What %s meant to say was: %s%s",
+						config.Get().Modules.Corrections.Message,
 						format.Bold+e.Nick+format.Reset,
-						prefix,
-						format.Italics+corrected,
+						prefix+format.Italics+corrected,
 					)
 
 					return true

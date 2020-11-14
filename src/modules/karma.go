@@ -41,13 +41,14 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 
 		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
-			"%s%s%s got the current karma %s%d%s!",
-			format.Bold+format.Color+format.Colors.Magenta,
-			karma.Item,
-			format.Reset,
-			format.Bold+format.Color+format.Colors.LightCyan,
-			karma.Points,
-			format.Reset,
+			config.Get().Modules.Karma.ReportMessage,
+			format.Bold+karma.Item+format.Reset,
+			fmt.Sprintf(
+				"%s%d%s",
+				format.Bold,
+				karma.Points,
+				format.Reset,
+			),
 		)
 
 		return
@@ -103,13 +104,14 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		karmaReportMessage = append(
 			karmaReportMessage,
 			fmt.Sprintf(
-				"%s%s%s karma changed to %s%d%s",
-				format.Bold+format.Color+format.Colors.Magenta,
-				word,
-				format.Reset,
-				format.Bold+format.Color+format.Colors.LightCyan,
-				karma.Points,
-				format.Reset,
+				config.Get().Modules.Karma.ChangeMessage,
+				format.Bold+word+format.Reset,
+				fmt.Sprintf(
+					"%s%d%s",
+					format.Bold,
+					karma.Points,
+					format.Reset,
+				),
 			),
 		)
 	}
