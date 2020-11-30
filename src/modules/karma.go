@@ -37,7 +37,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 		var karma db.KarmaModel
-		db.Get().Gorm.Where(&db.KarmaModel{Item: words[1]}).First(&karma)
+		db.Get().Gorm.Where(&db.KarmaModel{Item: strings.ToLower(words[1])}).First(&karma)
 
 		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
@@ -84,7 +84,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 
 	for word, points := range wordDiffs {
 		var karma db.KarmaModel
-		db.Get().Gorm.Where(&db.KarmaModel{Item: word}).First(&karma)
+		db.Get().Gorm.Where(&db.KarmaModel{Item: strings.ToLower(word)}).First(&karma)
 
 		// Calculate new total points
 		karma.Points = karma.Points + points
@@ -93,7 +93,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		if karma.ID == 0 {
 			// Insert item
 			db.Get().Gorm.Create(&db.KarmaModel{
-				Item:   word,
+				Item:   strings.ToLower(word),
 				Points: karma.Points,
 			})
 		} else {

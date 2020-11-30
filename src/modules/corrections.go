@@ -52,7 +52,6 @@ func (c Corrections) handle(conn *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 		db.Get().Gorm.Create(&correction)
-
 	}
 
 	// Select all items
