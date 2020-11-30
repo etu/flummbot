@@ -65,7 +65,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 				continue
 			}
 
-			wordDiffs[word] += 1
+			wordDiffs[strings.ToLower(word)] += 1
 		}
 
 		if len(minusOperator) > 1 && strings.HasSuffix(word, minusOperator) {
@@ -75,7 +75,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 				continue
 			}
 
-			wordDiffs[word] -= 1
+			wordDiffs[strings.ToLower(word)] -= 1
 		}
 	}
 
