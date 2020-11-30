@@ -97,7 +97,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 				Points: karma.Points,
 			})
 		} else {
-			db.Get().Gorm.Model(&karma).UpdateColumns(karma)
+			db.Get().Gorm.Model(&db.KarmaModel{}).Where("ID = ?", karma.ID).Update("points", karma.Points)
 		}
 
 		// Append messages to list of messages
