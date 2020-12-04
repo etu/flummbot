@@ -23,7 +23,7 @@ func (_ Extras) RegisterCallbacks(conn *irc.IrcConnection) {
 					go func(conn *irc.IrcConnection, channel string, text string) {
 						format := irc.GetFormat()
 
-						for i := 3; i > 0; i-- {
+						for i := 10; i > 0; i-- {
 							conn.IrcEventConnection.Privmsgf(
 								channel,
 								format.Bold+config.Get().Modules.Extras.CountdownMessageN,
