@@ -3,19 +3,7 @@
 let
   cfg = config.services.flummbot;
 
-  package = pkgs.buildGoModule (let
-    version = "20201209";
-  in {
-    name = "flummbot-${version}";
-
-    src = ./.;
-
-    prePatch = ''
-      substituteInPlace main.go --replace "%version%" "${version}"
-    '';
-
-    vendorSha256 = "sha256-VIUm+m43fpFhflXU22hUD9IJINYZM6VWq7dmSiBsBGc=";
-  });
+  package = pkgs.callPackage ./default.nix { };
 in
 {
   # Set up module options
