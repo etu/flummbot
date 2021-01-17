@@ -20,6 +20,12 @@ func (k Karma) RegisterCallbacks(c *irc.IrcConnection) {
 				go k.handle(c, e)
 			},
 		)
+		c.IrcEventConnection.AddCallback(
+			"CTCP_ACTION",
+			func(e *ircevent.Event) {
+				go k.handle(c, e)
+			},
+		)
 	}
 }
 

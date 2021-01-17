@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {}, ... }:
 
 let
-  version = "20201220";
+  version = "20210117";
 in pkgs.buildGoModule {
   pname = "flummbot";
   inherit version;
