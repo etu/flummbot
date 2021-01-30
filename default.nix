@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {}, ... }:
 
 let
-  version = "20210117";
+  version = "20210130";
 in pkgs.buildGoModule {
   pname = "flummbot";
   inherit version;
@@ -12,5 +12,5 @@ in pkgs.buildGoModule {
     substituteInPlace main.go --replace "%version%" ${version}
   '';
 
-  vendorSha256 = "sha256-VIUm+m43fpFhflXU22hUD9IJINYZM6VWq7dmSiBsBGc=";
+  vendorSha256 = "0rq4dhh4lrmpmdbaacqrsqh0klhgaildpm2mgrhr2zipdvx2d1al";
 }
