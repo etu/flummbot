@@ -48,7 +48,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
 			config.Get().Modules.Karma.ReportMessage,
-			format.Bold+karma.Item+format.Reset,
+			format.Bold+strings.ToLower(words[1])+format.Reset,
 			fmt.Sprintf(
 				"%s%d%s",
 				format.Bold,
