@@ -54,7 +54,7 @@ Command = "!quote"
 AddMessage = "Quote added, use %s without params to get a random quote" # Has to contain one %s for the printf
 PrintMessage = "Quote added by %s @ %s: %s" # Has to contain three %s for the printf
 
-# Enable Tolls module to relay messages
+# Enable Tells module to relay messages
 [Modules.Tells]
 Enable = true
 Command = "!tell"
