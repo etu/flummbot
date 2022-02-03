@@ -57,6 +57,7 @@ in
         Type = "simple";
         User = cfg.user;
         Group = cfg.group;
+        ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR1 $MAINPID";
         ExecStart = "${cfg.package}/bin/flummbot --config ${cfg.stateDirectory}/flummbot.toml";
         WorkingDirectory = cfg.stateDirectory;
         Restart = "always";
