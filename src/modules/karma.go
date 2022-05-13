@@ -46,7 +46,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		var karma db.KarmaModel
 
 		// If this word has a static value, just ignore the database and set a value
-		if val, ok := config.Get().Modules.Karma.StaticValues[words[1]]; ok {
+		if val, ok := config.Get().Modules.Karma.StaticValues[strings.ToLower(words[1])]; ok {
 			karma.Points = val
 		} else {
 			// Otherwise, look it up in the database.
@@ -97,7 +97,7 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	karmaReportMessage := make([]string, 0)
 
 	for word, points := range wordDiffs {
-		if _, ok := config.Get().Modules.Karma.StaticValues[word]; ok {
+		if _, ok := config.Get().Modules.Karma.StaticValues[strings.ToLower(word)]; ok {
 			log.Printf("Karma change for static word %s was ignored", word)
 			continue
 		}
