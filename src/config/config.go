@@ -43,6 +43,7 @@ type ClientConfig struct {
 			Command       string
 			ChangeMessage string
 			ReportMessage string
+			StaticValues  map[string]int
 		}
 		Quotes struct {
 			Enable       bool

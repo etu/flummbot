@@ -2,6 +2,7 @@ package modules
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/etu/flummbot/src/config"
@@ -43,7 +44,14 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 		}
 
 		var karma db.KarmaModel
-		db.Get().Gorm.Where(&db.KarmaModel{Item: strings.ToLower(words[1])}).First(&karma)
+
+		// If this word has a static value, just ignore the database and set a value
+		if val, ok := config.Get().Modules.Karma.StaticValues[words[1]]; ok {
+			karma.Points = val
+		} else {
+			// Otherwise, look it up in the database.
+			db.Get().Gorm.Where(&db.KarmaModel{Item: strings.ToLower(words[1])}).First(&karma)
+		}
 
 		c.IrcEventConnection.Privmsgf(
 			e.Arguments[0],
@@ -89,6 +97,11 @@ func (k Karma) handle(c *irc.IrcConnection, e *ircevent.Event) {
 	karmaReportMessage := make([]string, 0)
 
 	for word, points := range wordDiffs {
+		if _, ok := config.Get().Modules.Karma.StaticValues[word]; ok {
+			log.Printf("Karma change for static word %s was ignored", word)
+			continue
+		}
+
 		var karma db.KarmaModel
 		db.Get().Gorm.Where(&db.KarmaModel{Item: strings.ToLower(word)}).First(&karma)
 

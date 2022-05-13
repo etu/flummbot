@@ -44,6 +44,10 @@ connect.
 It also listenes words that ends with plusOperator and minusOperator (++ or
 -- as default) to change the karmas.
 
+The karma module also allows to hardcode values for certain words, this makes
+it not print the karma for that word on change but it will still be able to
+report it. This is useful to hardcode values for words such as ~c++~.
+
 *** Corrections
 =separator= specifies which character that should be used as separator in
 =s/foo/bar=-style corrections.

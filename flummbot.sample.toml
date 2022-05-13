@@ -47,6 +47,12 @@ Command = "!karma"
 ChangeMessage = "%s karma changed to %s" # Has to contain two %s for the printf
 ReportMessage = "%s got the current karma %s!" # Has to contain two %s for the printf
 
+# Set static values for specific keywords, this makes the module
+# ignore karma changes for these values but still report the value it
+# has configured here when asked for it.
+[Modules.Karma.StaticValues]
+foobar = 3
+
 # Enable the quotes module to store quotes
 [Modules.Quotes]
 Enable = true
