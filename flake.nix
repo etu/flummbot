@@ -89,5 +89,14 @@
         };
       };
     };
+
+    devShells = flake-utils.lib.flattenTree {
+      default = { pkgs, ... }: pkgs.mkShell {
+        buildInputs = [
+          pkgs.gnumake
+          pkgs.go
+        ];
+      };
+    };
   });
 }
