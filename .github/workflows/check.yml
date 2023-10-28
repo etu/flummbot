@@ -1,13 +1,19 @@
 ---
 name: Check
 
-'on': [push, pull_request]
+'on':
+  push:
+  pull_request:
 
 jobs:
   format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v23
+      - uses: DeterminateSystems/nix-installer-action@v6
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - uses: DeterminateSystems/flake-checker-action@v5
+
       - run: 'nix fmt . -- --check'
+      - run: 'nix build .'
       - run: 'nix flake check'
