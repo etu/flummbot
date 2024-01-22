@@ -88,6 +88,7 @@
           systemd.services.flummbot = {
             description = "flummbot irc bot";
             after = ["network.target" "network-online.target"];
+            requires = ["network.target" "network-online.target"];
             wantedBy = ["multi-user.target"];
             serviceConfig = {
               Type = "simple";
