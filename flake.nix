@@ -104,13 +104,14 @@
       };
 
       devShells = flake-utils.lib.flattenTree {
-        default = {pkgs, ...}:
-          pkgs.mkShell {
-            buildInputs = [
-              pkgs.gnumake
-              pkgs.go
-            ];
-          };
+        default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.gnumake
+            pkgs.delve    # debugging
+            pkgs.go       # language
+            pkgs.gopls    # language server
+          ];
+        };
       };
 
       formatter = pkgs.alejandra;
