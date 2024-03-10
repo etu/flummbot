@@ -107,9 +107,9 @@
         default = pkgs.mkShell {
           buildInputs = [
             pkgs.gnumake
-            pkgs.delve    # debugging
-            pkgs.go       # language
-            pkgs.gopls    # language server
+            pkgs.delve # debugging
+            pkgs.go # language
+            pkgs.gopls # language server
           ];
         };
       };
