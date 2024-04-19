@@ -28,7 +28,7 @@
             substituteInPlace main.go --replace "%version%" ${version}
           '';
 
-          vendorHash = "sha256-JnQcpwAAFUQsxhbgYJySUq4m8uWvPD0Kl7NPBkmMCfw=";
+          vendorHash = "sha256-aZo7HQ7ikzq06QtvB1igM5L6Mi2WmWFZ8ek9eKGEkbs=";
         });
       };
 
